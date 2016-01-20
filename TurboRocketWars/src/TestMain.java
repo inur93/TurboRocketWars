@@ -1,5 +1,6 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.FlowLayout;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -22,6 +23,7 @@ import org.jbox2d.dynamics.joints.RevoluteJointDef;
 import org.jbox2d.pooling.arrays.IntArray;
 import org.jbox2d.pooling.arrays.Vec2Array;
 
+import area51.turboRocketWars.Bodies.Ship;
 import area51.turboRocketWars.Bodies.userData.FixtureViewProperties;
 import area51.turboRocketWars.gui.MainGamePanel;
 import area51.turboRocketWars.gui.impl.MainGamePanelImpl;
@@ -32,9 +34,13 @@ import area51.turboRocketWars.maps.MapGenerator;
 public class TestMain {
 
 	private World world;
-	private Body body;
-	private MainGamePanel panel;
-	private OBBViewportTransform camera;
+	private Ship ship2;
+	private Ship ship1;
+	private MainGamePanel panel1;
+	private MainGamePanel panel2;
+	
+	private OBBViewportTransform camera1;
+	private OBBViewportTransform camera2;
 	public static void main(String[] args) {
 		new TestMain().run();
 	}
@@ -45,14 +51,22 @@ public class TestMain {
 	    int velocityIterations = 6;
 	    int positionIterations = 2;
 		// Run loop
+	    try {
+			Thread.sleep(6000);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	    for (int i = 0; i < 6000; ++i) {
 	        world.step(timeStep, velocityIterations, positionIterations);
 	        world.clearForces();
 	        world.computeParticleCollisionEnergy();
 	        world.drawDebugData();
-	        Vec2 point = new Vec2();
 	        
-	        camera.setCenter(body.getPosition());
+	        Vec2  p1 = ship1.getBody().getPosition();
+	        Vec2  p2 = ship2.getBody().getPosition();
+	        camera1.setCamera(p1.x, p1.y, 10);
+	        camera2.setCamera(p2.x, p2.y, 10);
 //	        world.
 //	        Vec2 position = body.getPosition();
 //	        float angle = body.getAngle();
@@ -63,23 +77,39 @@ public class TestMain {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-	        panel.paintScreen();
+	        panel1.paintScreen();
+	        panel2.paintScreen();
 	    }
 	}
 	public void setupGui(){
 		JFrame frame = new JFrame();
-		frame.setSize(600, 600);
+		frame.setSize(650, 600);
 		frame.setLocationRelativeTo(null);
-		frame.setLayout(new BorderLayout());
-		camera = new OBBViewportTransform();
-		camera.setCamera(0, 0, 3);
-		camera.setExtents(300, 300);
-		panel = new MainGamePanelImpl(this.world, camera);
-		new Thread(panel).start();
-		frame.add((JPanel) panel, "Center");
+		frame.setLayout(new FlowLayout());
+		
+		camera1 = new OBBViewportTransform();
+		camera1.setExtents(150, 300);
+		camera2 = new OBBViewportTransform();
+		camera2.setExtents(150, 300);
+		
+		panel1 = new MainGamePanelImpl(this.world, camera1);
+		panel2 = new MainGamePanelImpl(this.world, camera2);
+		
+		new Thread(panel1).start();
+		new Thread(panel2).start();
+		
+//		flow.
+//		frame.getLayout().addLayoutComponent("", (JPanel) panel1);
+		
+//		frame.add(BorderLayout.LINE_START, (JPanel) panel1);
+//		frame.add(BorderLayout.LINE_END, (JPanel) panel2);
+		frame.add((JPanel) panel1);
+		frame.add((JPanel) panel2);
+		
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
-		panel.paintScreen();
+		panel1.paintScreen();
+		panel2.paintScreen();
 		runProgram();
 		
 		
@@ -96,51 +126,20 @@ public class TestMain {
 	    
 	    PolygonShape groundBox = new PolygonShape();
 	    groundBox.setAsBox(100, 20);
-//	    groundBox.set(new Vec2[]{new Vec2(20, 20), new Vec2(20, 30), new Vec2(60, 30), new Vec2(60, 20)}, 4, new Vec2Array(), new IntArray());
-//	    ShapeType.CHAI
 
-	    
-//	    groundBox.m_vertices = ;
-//	    groundBox.setAsBox(50, 10, new Vec2(10, 5), 1);
-//	    groundBox.setAsBox(100, 10);
 	    groundBody.createFixture(groundBox, 0);
 	    
 	    // Dynamic Body polygon
-	    BodyDef bodyDef = new BodyDef();
-	    
-	    bodyDef.type = BodyType.DYNAMIC;
-	    FixtureViewProperties view = new FixtureViewProperties();
-	    view.fill = true;
-	    view.color = Color.red;
-	    
-	    bodyDef.setPosition(new Vec2(55, 80));
-	    bodyDef.setAngle((float) Math.toRadians(42));
-	    body = world.createBody(bodyDef);
-	    body.setUserData(view);	    
-	    PolygonShape dynamicBox = new PolygonShape();
-	    dynamicBox.setAsBox(5, 5);
-	    
-	    FixtureDef fixtureDef = new FixtureDef();
-	    fixtureDef.shape = dynamicBox;
-	    fixtureDef.density = 1;
-	    fixtureDef.friction = 0.3f;
-//	    fixtureDef.shape.
-	    body.createFixture(fixtureDef);
+	    ship1 = new Ship(world, new Vec2(0, 20));
+	    ship2 = new Ship(world, new Vec2(5, 20));
 		}
 	    
-	    // dynamic body chain
-		
-		
+	    // dynamic body chain	
 	    BodyDef bodyDef1 = new BodyDef();
 	    bodyDef1.setType(BodyType.STATIC);
-//	    bodyDef1.setFixedRotation(false);
-//	    bodyDef1.setAllowSleep(false);
-//	    bodyDef1.setActive(true);
-//	    bodyDef1.setAngle(30);
+
 	    bodyDef1.setPosition(new Vec2(30, 40));
 	    Body body1 = world.createBody(bodyDef1);
-//	    body1.set
-//	    body1.setActive(true);
 
 	    
 	    ChainShape chain = new ChainShape();
@@ -179,23 +178,9 @@ public class TestMain {
 
 	          prevBody = body;
 	        }
-	        this.body = prevBody;
+	        
 	    }
-//	    body1.crea
-	    // dynamic body circle
-//	    BodyDef bodyDef2 = new BodyDef();
-//	    bodyDef2.setType(BodyType.DYNAMIC);
-//	    bodyDef2.setPosition(new Vec2(0, 5));
-//	    Body body2 = world.createBody(bodyDef2);
-//
-//	    CircleShape circle = new CircleShape();
-//	    circle.setRadius(3);
-//	    FixtureDef fixtureDef2 = new FixtureDef();
-//	    fixtureDef2.setShape(circle);
-//	    fixtureDef2.setDensity(1);
-//	    fixtureDef2.setFriction(0.3f);
-//	    body2.createFixture(fixtureDef2);
-//	    ShapeType.
+
 	    setupGui();
 	}
 }

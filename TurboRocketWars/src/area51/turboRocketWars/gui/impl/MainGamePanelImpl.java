@@ -15,33 +15,6 @@ import java.awt.event.ComponentEvent;
 
 import javax.swing.JPanel;
 
-//import org.jbox2d.testbed.framework.TestbedController;
-//import org.jbox2d.testbed.framework.TestbedModel;
-//import org.jbox2d.testbed.framework.j2d.AWTPanelHelper;
-//import org.jbox2d.testbed.framework.j2d.TestPanelJ2D;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import org.jbox2d.collision.shapes.ChainShape;
 import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.collision.shapes.EdgeShape;
@@ -53,11 +26,7 @@ import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.Fixture;
 import org.jbox2d.dynamics.World;
 
-import area51.turboRocketWars.Bodies.userData.ChainTRW;
-import area51.turboRocketWars.Bodies.userData.CircleTRW;
-import area51.turboRocketWars.Bodies.userData.EdgeTRW;
 import area51.turboRocketWars.Bodies.userData.FixtureViewProperties;
-import area51.turboRocketWars.Bodies.userData.PolygonTRW;
 import area51.turboRocketWars.gui.MainGamePanel;
 
 public class MainGamePanelImpl extends JPanel implements MainGamePanel {
@@ -79,6 +48,7 @@ public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 	public MainGamePanelImpl(World world, OBBViewportTransform camera) {
 		this.world = world;
 		this.camera = camera;
+		setPreferredSize(new Dimension(300, 600));
 		this.camera.setYFlip(true);
 	}
 
@@ -89,8 +59,6 @@ public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 
 		for(int i = 0; i <= poly.getVertexCount(); i++){						  
 			Vec2 v1 = new Vec2(); 
-//			Vec2 v2 = new Vec2();
-
 			body.getWorldPointToOut((vertices[i%poly.getVertexCount()]), v1);
 			camera.getWorldToScreen(v1, v1);
 			p.addPoint((int) v1.x, (int) v1.y);
@@ -129,7 +97,14 @@ public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 	}
 
 	private void paintChain(Graphics2D g, Body body, ChainShape chain) {
-
+		
+		FixtureViewProperties viewProp = null;
+		if((viewProp = (FixtureViewProperties) body.getUserData()) != null){
+			g.setColor(viewProp.color);
+			g.setStroke(new BasicStroke(viewProp.stroke));
+		}else{
+			
+		}
 		for(int i = 1; i < chain.m_count; i++){
 			Vec2 v1 = new Vec2();
 			Vec2 v2 = new Vec2();
@@ -159,10 +134,10 @@ public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 	protected void paintComponent(Graphics graphics) {
 		Graphics2D g = (Graphics2D) graphics;
 
-		System.out.println("paint");
+//		System.out.println("paint");
 		Body body = world.getBodyList();
-		System.out.println("body count: " + world.getBodyCount());
-		Image img = createImage(600, 600);
+//		System.out.println("body count: " + world.getBodyCount());
+		Image img = createImage(300, 600);
 		g.drawImage(img, 0, 0, null);
 
 		do{
