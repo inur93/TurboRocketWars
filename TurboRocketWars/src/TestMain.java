@@ -51,18 +51,13 @@ public class TestMain {
 	    int velocityIterations = 6;
 	    int positionIterations = 2;
 		// Run loop
-	    try {
-			Thread.sleep(6000);
-		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+	   
 	    for (int i = 0; i < 6000; ++i) {
 	        world.step(timeStep, velocityIterations, positionIterations);
 	        world.clearForces();
 	        world.computeParticleCollisionEnergy();
 	        world.drawDebugData();
-	        
+//	        System.out.println("step");
 	        Vec2  p1 = ship1.getBody().getPosition();
 	        Vec2  p2 = ship2.getBody().getPosition();
 	        camera1.setCamera(p1.x, p1.y, 10);
@@ -108,8 +103,8 @@ public class TestMain {
 		
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
-		panel1.paintScreen();
-		panel2.paintScreen();
+//		panel1.paintScreen();
+//		panel2.paintScreen();
 		runProgram();
 		
 		
@@ -130,8 +125,8 @@ public class TestMain {
 	    groundBody.createFixture(groundBox, 0);
 	    
 	    // Dynamic Body polygon
-	    ship1 = new Ship(world, new Vec2(0, 20));
-	    ship2 = new Ship(world, new Vec2(5, 20));
+	    ship1 = new Ship(world, new Vec2(-10, 20));
+	    ship2 = new Ship(world, new Vec2(10, 20));
 		}
 	    
 	    // dynamic body chain	

@@ -64,16 +64,20 @@ public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 			p.addPoint((int) v1.x, (int) v1.y);
 			
 		}
+		
+//		System.out.println("drawing polygon");
 		FixtureViewProperties viewProp = null;
 		Object ud = body.getUserData();
 		if(ud != null) viewProp = (FixtureViewProperties) ud;
 		if(viewProp != null && viewProp.fill){
+//			System.out.println("poly: " + p.xpoints);
 			g.setStroke(new BasicStroke(viewProp.stroke));
 			g.setColor(viewProp.color);
 			g.fillPolygon(p);
 		}
 		else {
-			g.setStroke(new BasicStroke(1));
+//			System.out.println("default polygon");
+			g.setStroke(new BasicStroke(2));
 			g.setColor(Color.black);
 			g.drawPolygon(p);
 		}
@@ -131,19 +135,16 @@ public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 
 
 	@Override
-	protected void paintComponent(Graphics graphics) {
+	protected synchronized void paintComponent(Graphics graphics) {
 		Graphics2D g = (Graphics2D) graphics;
-
-//		System.out.println("paint");
+		super.paintComponent(g);
 		Body body = world.getBodyList();
-//		System.out.println("body count: " + world.getBodyCount());
 		Image img = createImage(300, 600);
 		g.drawImage(img, 0, 0, null);
 
 		do{
 			if(body == null) break;
 			Fixture fix = body.getFixtureList();
-
 			do{
 				if(fix == null) break;
 				Shape shape = fix.getShape();
@@ -161,8 +162,7 @@ public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 					paintPolygon(g, body, (PolygonShape) shape); 
 					break;
 				}
-
-			}while(fix.getNext() != null);				  
+			}while((fix = fix.getNext()) != null);	
 		}while((body = body.getNext()) != null);
 	};
 
@@ -205,7 +205,7 @@ public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 		return true;
 	}
 
-	public void paintScreen() {
+	public synchronized void paintScreen() {
 		repaint();
 		//	    try {
 		//	      Graphics g = this.getGraphics();
