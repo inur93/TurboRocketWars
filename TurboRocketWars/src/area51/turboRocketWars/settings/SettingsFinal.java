@@ -11,4 +11,5 @@ public class SettingsFinal {
 	public static final float TIME_STEP = 1.0f/60.0f;
 	public static final int velocityIterations = 6;
 	public static final int positionIterations = 2;
+	public static final int KEY_UPDATE_SPEED = 1000/50;
 }

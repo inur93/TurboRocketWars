@@ -1,17 +1,12 @@
 package area51.turboRocketWars.gui.impl;
 
-import java.awt.AWTError;
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Polygon;
-import java.awt.Toolkit;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 
 import javax.swing.JPanel;
 
@@ -26,17 +21,21 @@ import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.Fixture;
 import org.jbox2d.dynamics.World;
 
+import area51.turboRocketWars.Bodies.Ship;
 import area51.turboRocketWars.Bodies.userData.FixtureViewProperties;
 import area51.turboRocketWars.gui.MainGamePanel;
 
 public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static final int SCREEN_DRAG_BUTTON = 3;
 
-	public static final int INIT_WIDTH = 600;
-	public static final int INIT_HEIGHT = 600;
-
-	private World world;
+	private volatile World world;
+	private Ship ship;
 	private Graphics2D dbg = null;
 	private Image dbImage = null;
 
@@ -45,13 +44,23 @@ public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 	private OBBViewportTransform camera;
 	public volatile boolean stopped = false;
 
-	public MainGamePanelImpl(World world, OBBViewportTransform camera) {
+	public MainGamePanelImpl(World world, Ship ship, OBBViewportTransform camera) {
+		this.ship = ship;
 		this.world = world;
 		this.camera = camera;
-		setPreferredSize(new Dimension(300, 600));
 		this.camera.setYFlip(true);
 	}
+	
+	public void setWorld(World world){
+		this.world = world;
+	}
 
+	@Override
+	public void setBounds(int x, int y, int width, int height) {
+		super.setBounds(x, y, width, height);
+		camera.setExtents(width/2, height/2);
+	};
+	
 	public void paintPolygon(Graphics2D g,Body body, PolygonShape poly){
 
 		Vec2[] vertices = poly.getVertices();
@@ -64,19 +73,15 @@ public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 			p.addPoint((int) v1.x, (int) v1.y);
 			
 		}
-		
-//		System.out.println("drawing polygon");
 		FixtureViewProperties viewProp = null;
 		Object ud = body.getUserData();
 		if(ud != null) viewProp = (FixtureViewProperties) ud;
 		if(viewProp != null && viewProp.fill){
-//			System.out.println("poly: " + p.xpoints);
 			g.setStroke(new BasicStroke(viewProp.stroke));
 			g.setColor(viewProp.color);
 			g.fillPolygon(p);
 		}
 		else {
-//			System.out.println("default polygon");
 			g.setStroke(new BasicStroke(2));
 			g.setColor(Color.black);
 			g.drawPolygon(p);
@@ -111,10 +116,11 @@ public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 		}
 		for(int i = 1; i < chain.m_count; i++){
 			Vec2 v1 = new Vec2();
-			Vec2 v2 = new Vec2();
+			Vec2 v2 = new Vec2();	
 			
 			body.getWorldPointToOut(chain.m_vertices[i-1], v1);
 			body.getWorldPointToOut(chain.m_vertices[i], v2);
+			
 			camera.getWorldToScreen(v1, v1);
 			camera.getWorldToScreen(v2, v2);
 			
@@ -137,11 +143,13 @@ public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 	@Override
 	protected synchronized void paintComponent(Graphics graphics) {
 		Graphics2D g = (Graphics2D) graphics;
+		g.setBackground(Color.black);
 		super.paintComponent(g);
+		if(world == null) return;
+		
 		Body body = world.getBodyList();
-		Image img = createImage(300, 600);
-		g.drawImage(img, 0, 0, null);
-
+		
+		camera.setCamera(ship.getBody().getPosition().x, ship.getBody().getPosition().y, 5);
 		do{
 			if(body == null) break;
 			Fixture fix = body.getFixtureList();
@@ -166,15 +174,6 @@ public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 		}while((body = body.getNext()) != null);
 	};
 
-
-
-	public void run(){
-		//		  while(!stopped){
-		//			  
-		//			  delay(30);
-		//		  }
-	}
-
 	public void delay(long msec){
 		try {
 			Thread.sleep(msec);
@@ -188,13 +187,11 @@ public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 
 	public boolean render() {
 		if (dbImage == null) {
-			//	      log.debug("dbImage is null, creating a new one");
 			if (panelWidth <= 0 || panelHeight <= 0) {
 				return false;
 			}
 			dbImage = createImage(panelWidth, panelHeight);
 			if (dbImage == null) {
-				//	        log.error("dbImage is still null, ignoring render call");
 				return false;
 			}
 			dbg = (Graphics2D) dbImage.getGraphics();
@@ -207,16 +204,10 @@ public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 
 	public synchronized void paintScreen() {
 		repaint();
-		//	    try {
-		//	      Graphics g = this.getGraphics();
-		//	      if ((g != null) && dbImage != null) {
-		//	        g.drawImage(dbImage, 0, 0, null);
-		//	        Toolkit.getDefaultToolkit().sync();
-		//	        g.dispose();
-		//	      }
-		//	    } catch (AWTError e) {
-		////	      log.error("Graphics context error", e);
-		//	    }
+	}
+
+	public JPanel getPanel() {
+		return this;
 	}
 
 }

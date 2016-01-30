@@ -1,18 +1,26 @@
 package area51.turboRocketWars.gui;
 
-public interface MainGamePanel extends Runnable{
+import javax.swing.JPanel;
 
-		  public void grabFocus();
+import org.jbox2d.dynamics.World;
 
-		  /**
-		   * Renders the world
-		   * @return if the renderer is ready for drawing
-		   */
-		  public boolean render();
+public interface MainGamePanel{
 
-		  /**
-		   * Paints the rendered world to the screen
-		   */
-		  public void paintScreen();
-		
+	void setWorld(World world);
+
+	void grabFocus();
+
+	/**
+	 * Renders the world
+	 * @return if the renderer is ready for drawing
+	 */
+	boolean render();
+
+	/**
+	 * Paints the rendered world to the screen
+	 */
+	void paintScreen();
+
+	JPanel getPanel();
+
 }
