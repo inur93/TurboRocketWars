@@ -11,11 +11,12 @@ import org.jbox2d.dynamics.World;
 import area51.turboRocketWars.Bodies.userData.UserDataProp;
 import area51.turboRocketWars.settings.SettingsFinal;
 
-public class NormalShot extends Shot {
+public class Fragments extends Shot {
 
-	private float impFactor = 250;
-	public NormalShot(Vec2 pos, Vec2 dir, World world) {
+	private float impFactor = 150;
+	public Fragments(Vec2 pos, Vec2 dir, World world) {
 		super(pos, dir, world);
+		
 	}
 
 	@Override
@@ -30,13 +31,12 @@ public class NormalShot extends Shot {
 		body.applyLinearImpulse(dir.mul(impFactor), pos, true);
 		body.setUserData(new UserDataProp(SettingsFinal.USER_DATA_SHOT, Color.WHITE, 1, true));
 	}
-	
-	public static class NormalShotFactory implements Factory<NormalShot>{
 
-		public NormalShot factory(Vec2 pos, Vec2 dir, World world) {
-			return new NormalShot(pos, dir, world);
+	public static class FragmentFactory implements Factory<Fragments>{
+
+		public Fragments factory(Vec2 pos, Vec2 dir, World world) {
+			return new Fragments(pos, dir, world);
 		}
 		
 	}
-
 }

@@ -24,9 +24,11 @@ import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.FixtureDef;
 import org.jbox2d.dynamics.World;
 
-import area51.turboRocketWars.Bodies.Cannon.CannonType;
+import area51.turboRocketWars.Bodies.cannons.Cannon;
 import area51.turboRocketWars.Bodies.seperator.B2Separator;
-import area51.turboRocketWars.Bodies.shots.Shot.ShotType;
+import area51.turboRocketWars.Bodies.shots.Bomb;
+import area51.turboRocketWars.Bodies.shots.NormalShot;
+import area51.turboRocketWars.Bodies.shots.NormalShot.NormalShotFactory;
 import area51.turboRocketWars.Bodies.userData.UserDataProp;
 import area51.turboRocketWars.settings.SettingsFinal;
 
@@ -53,15 +55,17 @@ public class Ship{
 	
 	public static ArrayList<Ship> ships = new ArrayList<Ship>();
 	
+	private long timeOfLastShot = 0;
 	
 	public Ship(World world, Vec2 position) {
 		this.id = id;
 		this.spawnPoint = position;
 		this.world = world;
 		this.body = getNewBody(position.clone(), world);
-		this.cannonStd = new Cannon(CannonType.SINGLE, ShotType.NORMAL, world, this);
-		this.cannon1 = new Cannon(CannonType.BOMBER, ShotType.BOMB, world, this);
-		this.cannon2 = new Cannon(CannonType.DUAL, ShotType.NORMAL, world, this);
+		
+		this.cannonStd = new Cannon<NormalShot>(new NormalShotFactory(), 1, true, 100,world, this);
+		this.cannon1 = new Cannon<Bomb>(new Bomb.BombFactory(), 1, false, 1000, world, this);
+		this.cannon2 = new Cannon<NormalShot>(new NormalShotFactory(), 3, true, 300, world, this);
 		
 		
 		ships.add(this);
@@ -99,18 +103,30 @@ public class Ship{
 		return this.body;
 	}
 	
+	private boolean checkTime(long tolerance){
+		long newTime = System.currentTimeMillis();
+		if(newTime-timeOfLastShot > tolerance) {
+			timeOfLastShot = newTime;
+			return true;
+		}
+		return false;
+	}
+	
 	public void shootStd(){
 		if(this.lives <= 0) return;
+		if(checkTime(cannonStd.getReloadTime()))
 		cannonStd.fire();
 	}
 	
 	public void shoot1(){
 		if(this.lives <= 0) return;
+		if(checkTime(cannon1.getReloadTime()))
 		cannon1.fire();
 	}
 	
 	public void shoot2(){
 		if(this.lives <= 0) return;
+		if(checkTime(cannon2.getReloadTime()))
 		cannon2.fire();
 	}
 	

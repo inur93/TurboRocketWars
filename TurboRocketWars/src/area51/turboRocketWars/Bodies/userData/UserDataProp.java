@@ -14,5 +14,9 @@ public class UserDataProp {
 		this.stroke = stroke;
 		this.fill = fill;
 	}
+	
+	public String toString(){
+		return "bodyType: " + bodyType + "; color: " + color + ";stroke: " + stroke + ";fill: " + fill;
+	}
 
 }

@@ -35,8 +35,9 @@ public class LocalMultiplayerController implements Runnable, ContactListener{
 	private MainWindow window;
 	private World world;
 	private JPanel[] panels = new JPanel[2];
-	Queue<Body> bodiesToDelete = new LinkedList<Body>();
-	Queue<Ship> shipsToKill = new LinkedList<Ship>();
+	public static Queue<Body> bodiesToDelete = new LinkedList<Body>();
+	public Queue<Ship> shipsToKill = new LinkedList<Ship>();
+	
 	public static Queue<Delegate> delegates = new LinkedList<Delegate>();
 	
 	public LocalMultiplayerController() {
@@ -82,7 +83,7 @@ public class LocalMultiplayerController implements Runnable, ContactListener{
 	public void run() {
 		
 		while(true){
-			world.step(SettingsFinal.TIME_STEP, 6, 3);
+			world.step(SettingsFinal.TIME_STEP, SettingsFinal.velocityIterations, SettingsFinal.positionIterations);
 			
 			while(!bodiesToDelete.isEmpty()){
 				world.destroyBody(bodiesToDelete.remove());
@@ -118,6 +119,7 @@ public class LocalMultiplayerController implements Runnable, ContactListener{
 		Body a = contact.getFixtureA().getBody();
 		Body b = contact.getFixtureB().getBody();
 		if(((UserDataProp)a.getUserData()).bodyType.equals(SettingsFinal.USER_DATA_SHOT)){
+//			System.out.println(a.getUserData() + "==" + b.getUserData());
 			bodiesToDelete.add(a);
 			if(((UserDataProp)b.getUserData()).bodyType.equals(SettingsFinal.USER_DATA_SHIP)){
 				for(Ship s : Ship.ships){

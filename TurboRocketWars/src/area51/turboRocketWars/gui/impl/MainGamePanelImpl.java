@@ -179,7 +179,7 @@ public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 			g.drawString("YOU WIN", 50, getHeight()/2);
 		}
 		if(ship.getLives() > 0){
-		camera.setCamera(ship.getBody().getPosition().x, ship.getBody().getPosition().y, 5);
+		camera.setCamera(ship.getBody().getPosition().x, ship.getBody().getPosition().y, SettingsFinal.CAMERA_ZOOM);
 		} else{
 			camera.setCamera(ship.getSpawPoint().x, ship.getSpawPoint().y, 5);
 		}

@@ -17,4 +17,5 @@ public class SettingsFinal {
 	public static final String USER_DATA_MAP = "map";
 	
 	public static final int GRAPHICS_UPDATE_RATE = 1000/60;
+	public static final float CAMERA_ZOOM = 2;
 }
