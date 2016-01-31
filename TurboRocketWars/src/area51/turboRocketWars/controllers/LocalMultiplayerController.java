@@ -19,11 +19,13 @@ import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.World;
 import org.jbox2d.dynamics.contacts.Contact;
 
+import area51.turboRocketWars.Bodies.Delegate;
 import area51.turboRocketWars.Bodies.Ship;
 import area51.turboRocketWars.Bodies.userData.UserDataProp;
 import area51.turboRocketWars.gui.MainGamePanel;
 import area51.turboRocketWars.gui.MainWindow;
 import area51.turboRocketWars.gui.impl.MainGamePanelImpl;
+import area51.turboRocketWars.gui.impl.MainMenuPanelImpl;
 import area51.turboRocketWars.gui.impl.MainWindowImpl;
 import area51.turboRocketWars.settings.KeyBoardConfigurations;
 import area51.turboRocketWars.settings.SettingsFinal;
@@ -35,6 +37,8 @@ public class LocalMultiplayerController implements Runnable, ContactListener{
 	private JPanel[] panels = new JPanel[2];
 	Queue<Body> bodiesToDelete = new LinkedList<Body>();
 	Queue<Ship> shipsToKill = new LinkedList<Ship>();
+	public static Queue<Delegate> delegates = new LinkedList<Delegate>();
+	
 	public LocalMultiplayerController() {
 		window = new MainWindowImpl();
 		world = new World(new Vec2(0, -10));
@@ -64,7 +68,9 @@ public class LocalMultiplayerController implements Runnable, ContactListener{
 		KeyHandler keyHandler2 = new KeyHandler(new KeyBoardConfigurations(KeyBoardConfigurations.WASD_CONFIG), ship2);
 		
 		window.addWindowPanel(panel1.getPanel(), panel2.getPanel());
-//		window.addWindowPanel(panel2.getPanel());
+
+		new Thread(panel1).start();
+		new Thread(panel2).start();
 		
 		window.addKeyListener(keyHandler1);
 		window.addKeyListener(keyHandler2);
@@ -73,34 +79,35 @@ public class LocalMultiplayerController implements Runnable, ContactListener{
 		new Thread(this).start();
 	}
 
-	long oldTime;
-	long newTime;
 	public void run() {
-		oldTime = System.currentTimeMillis();
-		float timeStep = 1.0f/60.0f;
+		
 		while(true){
-//			newTime = System.currentTimeMillis();
-			world.step(timeStep, 6, 3);
+			world.step(SettingsFinal.TIME_STEP, 6, 3);
+			
 			while(!bodiesToDelete.isEmpty()){
 				world.destroyBody(bodiesToDelete.remove());
 			}
+			
 			while(!shipsToKill.isEmpty()){
 				Ship s = shipsToKill.remove();
 				world.destroyBody(s.getBody());
 				s.die();
 			}
+			
+			while(!delegates.isEmpty()) delegates.remove().execute();
+			
 			if(Ship.ships.size() == 1){
 				Ship.ships.get(0).setWinner();
+				break;
 			}
-			oldTime = newTime;
-			for(JPanel p : panels) p.repaint();
+			
+			
 			try {
-				Thread.sleep(1000/60);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+				Thread.sleep((long) (SettingsFinal.TIME_STEP*1000));
+			} catch (InterruptedException e) {}
 		}
+		
+		window.setMenu();
 	}
 	
 	public static void main(String[] args) {

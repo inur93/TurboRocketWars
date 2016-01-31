@@ -25,8 +25,8 @@ import org.jbox2d.dynamics.FixtureDef;
 import org.jbox2d.dynamics.World;
 
 import area51.turboRocketWars.Bodies.Cannon.CannonType;
-import area51.turboRocketWars.Bodies.Shot.ShotType;
 import area51.turboRocketWars.Bodies.seperator.B2Separator;
+import area51.turboRocketWars.Bodies.shots.Shot.ShotType;
 import area51.turboRocketWars.Bodies.userData.UserDataProp;
 import area51.turboRocketWars.settings.SettingsFinal;
 
@@ -35,8 +35,8 @@ public class Ship{
 	private static Vec2[] shapeVectors = new Vec2[]{new Vec2(-4f,-5f), new Vec2(0f,-2f), new Vec2(4f,-5f), new Vec2(0f,5f)};
 	private Vec2 boostVec = new Vec2(0,200);
 	
-	private int lives = 1;
-	private double maxHitPoints = 10;
+	private int lives = 5;
+	private double maxHitPoints = 100;
 	private double hitPoints = maxHitPoints;
 	
 	private String id;
@@ -161,7 +161,7 @@ public class Ship{
 			ships.remove(this);
 			this.lives = 0;
 			this.hitPoints = 0;
-			this.body = null;
+//			this.body = null;
 			return;
 		}
 		body = getNewBody(spawnPoint.clone(), world);

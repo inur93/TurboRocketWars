@@ -4,7 +4,7 @@ import javax.swing.JPanel;
 
 import org.jbox2d.dynamics.World;
 
-public interface MainGamePanel{
+public interface MainGamePanel extends Runnable{
 
 	void setWorld(World world);
 

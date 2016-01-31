@@ -24,6 +24,7 @@ import org.jbox2d.dynamics.World;
 import area51.turboRocketWars.Bodies.Ship;
 import area51.turboRocketWars.Bodies.userData.UserDataProp;
 import area51.turboRocketWars.gui.MainGamePanel;
+import area51.turboRocketWars.settings.SettingsFinal;
 
 public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 
@@ -49,6 +50,7 @@ public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 		this.world = world;
 		this.camera = camera;
 		this.camera.setYFlip(true);
+		setBackground(Color.black);
 	}
 	
 	public void setWorld(World world){
@@ -146,8 +148,7 @@ public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 		
 		super.paintComponent(g);
 		if(world == null) return;
-		setBackground(Color.black);
-//		g.setColor(Color.black);
+		
 		Body body = world.getBodyList();
 		double ratio = 200/ship.getMaxHitPoints();
 		double hp = ship.getCurHitPoints();
@@ -172,7 +173,7 @@ public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 		if(ship.getLives() <= 0){
 			g.setFont(new Font(Font.SERIF, Font.BOLD, 140));
 			g.drawString("GAME OVER", 50, getHeight()/2);;
-		}
+		}else
 		if(ship.isWinner()){
 			g.setFont(new Font(Font.SERIF, Font.BOLD, 140));
 			g.drawString("YOU WIN", 50, getHeight()/2);
@@ -240,6 +241,15 @@ public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 
 	public JPanel getPanel() {
 		return this;
+	}
+
+	public void run() {
+		while(true){
+		repaint();
+		try {
+			Thread.sleep(SettingsFinal.GRAPHICS_UPDATE_RATE);
+		} catch (InterruptedException e) {}
+		}
 	}
 
 }

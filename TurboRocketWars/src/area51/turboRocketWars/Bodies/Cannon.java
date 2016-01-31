@@ -9,7 +9,8 @@ import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.FixtureDef;
 import org.jbox2d.dynamics.World;
 
-import area51.turboRocketWars.Bodies.Shot.ShotType;
+import area51.turboRocketWars.Bodies.shots.Shot;
+import area51.turboRocketWars.Bodies.shots.Shot.ShotType;
 import area51.turboRocketWars.Bodies.userData.FixtureViewProperties;
 
 public class Cannon {
@@ -24,7 +25,7 @@ public class Cannon {
 	private Vec2[] stdDirOpt = new Vec2[]{new Vec2(0,5), new Vec2(0,-5)};
 	private Vec2 stdDir;
 	private Vec2[] stdCannonPos;
-	private long reloadTime = 500; //msec
+	private long reloadTime = 100; //msec
 	private long lastShotTime = 0;
 	private CannonType type;
 	private ShotType shotType;
