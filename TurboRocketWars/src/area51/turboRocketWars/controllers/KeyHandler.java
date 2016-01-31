@@ -46,11 +46,11 @@ public class KeyHandler implements KeyListener, ActionListener{
 			}else if(k == keyConfig.RIGHT){
 				ship.yawRight();
 			}else if(k == keyConfig.SHOT1){
-				ship.shoot();
+				ship.shootStd();
 			}else if(k == keyConfig.SHOT2){
-				
+				ship.shoot1();
 			}else if(k == keyConfig.SHOT3){
-				
+				ship.shoot2();
 			}
 		}
 	}

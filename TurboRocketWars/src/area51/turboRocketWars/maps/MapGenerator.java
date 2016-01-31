@@ -31,7 +31,7 @@ public class MapGenerator extends World{
 		step(TIME_STEP, velocityIterations, positionIterations);
 		Vec2 position = ship.getPosition();
 		float angle = ship.getAngle();
-		System.out.printf("%4.2f %4.2f %4.2f\n", position.x, position.y, angle);
+//		System.out.printf("%4.2f %4.2f %4.2f\n", position.x, position.y, angle);
 		}
 	}
 	

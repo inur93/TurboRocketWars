@@ -52,7 +52,6 @@ public class B2Separator{
 		int n = verticesVec.length;
 		int j, m;
 		Vec2[] vec = new Vec2[n];
-		System.out.println(validate(verticesVec));
 		PolygonShape polyShape = new PolygonShape();
 
 		for (int i=0; i<n; i++) {
@@ -67,11 +66,9 @@ public class B2Separator{
 			vec=figsVec[i];
 			m=vec.length;
 			verticesVec= new Vec2[m];
-			System.out.println("new vertex");
 			for (j=0; j<m; j++) {
 
 				verticesVec[j] = new Vec2(vec[j].x/scale,vec[j].y/scale);
-				System.out.println(verticesVec[j]);
 			}
 
 			polyShape=new PolygonShape();
@@ -253,15 +250,9 @@ public class B2Separator{
 
 					ArrayList<Vec2> temp = new ArrayList<Vec2>();
 					temp.ensureCapacity(vec1.size());
-//					System.out.println("check reverse");
-//					for(Vec2 vec1test : vec1) System.out.println(vec1test);
-//					System.out.println("second");
 					for(int index = vec1.size()-1; index >= 0; index--){
-//						System.out.println(vec1.get(index));
 						temp.add(vec1.get(index));
 					}
-//					System.out.println("third");
-//					for(Vec2 testing : temp) System.out.println(testing);
 					vec1= temp;
 
 					h=-1;
@@ -292,22 +283,13 @@ public class B2Separator{
 					queue.addLast(vec1.toArray( new Vec2[vec1.size()]));
 					queue.addLast(vec2.toArray(new Vec2[vec2.size()]));
 					queue.remove(0);
-					System.out.println("pop1 push 2");
 
 					break;
 				}
 			}
 
 			if (isConvex) {
-				System.out.println("pop only");
 				figsVec.add(queue.remove(0));
-			}
-		}
-		
-		for(Vec2[] test : figsVec){
-			System.out.println("new");
-			for(Vec2 test1 : test){
-				System.out.println(test1);
 			}
 		}
 		

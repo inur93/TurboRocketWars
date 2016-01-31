@@ -1,5 +1,6 @@
 package area51.turboRocketWars.gui.impl;
 
+import java.awt.Color;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
@@ -17,6 +18,7 @@ public class MainWindowImpl extends JFrame implements MainWindow {
 	public MainWindowImpl(){
 		this.setExtendedState(MAXIMIZED_BOTH);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		getContentPane().setBackground(Color.black);
 		setAlwaysOnTop(true);
 		setVisible(true);
 	}

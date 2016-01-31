@@ -22,7 +22,7 @@ import org.jbox2d.dynamics.Fixture;
 import org.jbox2d.dynamics.World;
 
 import area51.turboRocketWars.Bodies.Ship;
-import area51.turboRocketWars.Bodies.userData.FixtureViewProperties;
+import area51.turboRocketWars.Bodies.userData.UserDataProp;
 import area51.turboRocketWars.gui.MainGamePanel;
 
 public class MainGamePanelImpl extends JPanel implements MainGamePanel {
@@ -35,7 +35,7 @@ public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 	public static final int SCREEN_DRAG_BUTTON = 3;
 
 	private volatile World world;
-	private Ship ship;
+	private volatile Ship ship;
 	private Graphics2D dbg = null;
 	private Image dbImage = null;
 
@@ -73,9 +73,9 @@ public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 			p.addPoint((int) v1.x, (int) v1.y);
 			
 		}
-		FixtureViewProperties viewProp = null;
+		UserDataProp viewProp = null;
 		Object ud = body.getUserData();
-		if(ud != null) viewProp = (FixtureViewProperties) ud;
+		if(ud != null) viewProp = (UserDataProp) ud;
 		if(viewProp != null && viewProp.fill){
 			g.setStroke(new BasicStroke(viewProp.stroke));
 			g.setColor(viewProp.color);
@@ -92,7 +92,6 @@ public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 	public void paintCircle(Graphics2D g, Body body, CircleShape circle){
 		Vec2 pos = body.getPosition();
 		for(int i = 0; i < circle.getVertexCount(); i++){
-			System.out.println("drawing circle");
 			Vec2 v1 = circle.getVertex(i%circle.getVertexCount());
 			Vec2 v2 = circle.getVertex((i+1)%circle.getVertexCount());
 			camera.getWorldToScreen(pos.add(v1), v1);
@@ -107,8 +106,8 @@ public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 
 	private void paintChain(Graphics2D g, Body body, ChainShape chain) {
 		
-		FixtureViewProperties viewProp = null;
-		if((viewProp = (FixtureViewProperties) body.getUserData()) != null){
+		UserDataProp viewProp = null;
+		if((viewProp = (UserDataProp) body.getUserData()) != null){
 			g.setColor(viewProp.color);
 			g.setStroke(new BasicStroke(viewProp.stroke));
 		}else{
@@ -142,14 +141,47 @@ public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 
 	@Override
 	protected synchronized void paintComponent(Graphics graphics) {
+		
 		Graphics2D g = (Graphics2D) graphics;
-		g.setBackground(Color.black);
+		
 		super.paintComponent(g);
 		if(world == null) return;
-		
+		setBackground(Color.black);
+//		g.setColor(Color.black);
 		Body body = world.getBodyList();
+		double ratio = 200/ship.getMaxHitPoints();
+		double hp = ship.getCurHitPoints();
+		g.setStroke(new BasicStroke(10));
+		g.setFont(new Font(TOOL_TIP_TEXT_KEY, Font.BOLD, 12));
+		g.setColor(Color.red);
+		g.drawString("HP: ", 10, 15);
+		g.drawLine(60, 10, 60+200, 10);
+		g.setColor(Color.green);
+		if(hp > 0){
+		g.drawLine(60, 10,60+(int)(hp *ratio) , 10);
+		}
+		g.setColor(Color.red);
+		g.drawString("Lives: ", 10, 35);
+		g.setColor(Color.green);
+		String lives = "";
+		for(int i = 0; i < ship.getLives(); i++){
+			lives += "\u2764";
+		}
+		g.drawString(lives, 55, 35);
 		
+		if(ship.getLives() <= 0){
+			g.setFont(new Font(Font.SERIF, Font.BOLD, 140));
+			g.drawString("GAME OVER", 50, getHeight()/2);;
+		}
+		if(ship.isWinner()){
+			g.setFont(new Font(Font.SERIF, Font.BOLD, 140));
+			g.drawString("YOU WIN", 50, getHeight()/2);
+		}
+		if(ship.getLives() > 0){
 		camera.setCamera(ship.getBody().getPosition().x, ship.getBody().getPosition().y, 5);
+		} else{
+			camera.setCamera(ship.getSpawPoint().x, ship.getSpawPoint().y, 5);
+		}
 		do{
 			if(body == null) break;
 			Fixture fix = body.getFixtureList();

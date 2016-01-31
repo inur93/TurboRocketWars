@@ -12,4 +12,7 @@ public class SettingsFinal {
 	public static final int velocityIterations = 6;
 	public static final int positionIterations = 2;
 	public static final int KEY_UPDATE_SPEED = 1000/50;
+	public static final String USER_DATA_SHOT = "shot";
+	public static final String USER_DATA_SHIP = "ship";
+	public static final String USER_DATA_MAP = "map";
 }

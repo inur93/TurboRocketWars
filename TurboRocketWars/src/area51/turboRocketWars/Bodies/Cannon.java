@@ -9,70 +9,71 @@ import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.FixtureDef;
 import org.jbox2d.dynamics.World;
 
+import area51.turboRocketWars.Bodies.Shot.ShotType;
 import area51.turboRocketWars.Bodies.userData.FixtureViewProperties;
 
 public class Cannon {
 
-	public enum CannonType{SINGLE, DUAL, TRIPLE};
-	private long reloadTime = 200; //msec
+	public enum CannonType{SINGLE, DUAL, TRIPLE, BOMBER};
+	private Vec2[][] stdCannonPosOpt = new Vec2[][]{
+			new Vec2[]{new Vec2(0, 7)},
+			new Vec2[]{new Vec2(2, 5), new Vec2(-2,5)},
+			new Vec2[]{new Vec2(2.5f, 4), new Vec2(0,7), new Vec2(-2.5f, 4)},
+			new Vec2[]{new Vec2(0, -5)}
+	};
+	private Vec2[] stdDirOpt = new Vec2[]{new Vec2(0,5), new Vec2(0,-5)};
+	private Vec2 stdDir;
+	private Vec2[] stdCannonPos;
+	private long reloadTime = 500; //msec
 	private long lastShotTime = 0;
 	private CannonType type;
+	private ShotType shotType;
 	private World world;
 	private Ship ship;
 	
 	
-	public Cannon(CannonType type, World world, Ship ship) {
+	public Cannon(CannonType type, ShotType shotType,  World world, Ship ship) {
 		this.type = type;
 		this.world = world;
 		this.ship = ship;
-		
-	
-
-		
-
-		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.density = 1;
-		fixtureDef.friction = 0.01f;
-	}
-	
-	public synchronized void fire(){
-		long newTime = System.currentTimeMillis();
-		if(newTime-lastShotTime < 500){
-			return;
-		}
-		lastShotTime = newTime;
-		Vec2[] pos = null;
-		Vec2[] dir = null;
-		Mat22 m = Mat22.createRotationalTransform(ship.getBody().getAngle());
-		Vec2 defDir = m.mul(new Vec2(0, 10));
-		Vec2 posOffset = m.mul(new Vec2(0,5));
+		this.shotType = shotType;
 		switch(type){
 		case DUAL:
-//			pos = new Vec2[]{new Vec2(ship.getBody().getPosition(), y)
+			stdCannonPos = stdCannonPosOpt[1];
+			stdDir = stdDirOpt[0];
 			break;
 		case SINGLE:
-			pos = new Vec2[]{ship.getBody().getPosition().add(posOffset)};
-			dir = new Vec2[]{ship.getBody().getPosition().add(defDir)};
+			stdCannonPos = stdCannonPosOpt[0];
+			stdDir = stdDirOpt[0];
 			break;
 		case TRIPLE:
+			stdCannonPos = stdCannonPosOpt[2];
+			stdDir = stdDirOpt[0];
 			break;
+		case BOMBER:
+			stdCannonPos = stdCannonPosOpt[3];
+			stdDir = stdDirOpt[1];
 		default:
 			break;
 		
 		}
-		
-		for(int i = 0; i < pos.length; i++){
-			BodyDef bodyDef = new BodyDef();
 
-			bodyDef.type = BodyType.DYNAMIC;
-			bodyDef.setPosition(pos[i]);
-			Body body = world.createBody(bodyDef);
-			PolygonShape shape = new PolygonShape();
-			shape.setAsBox(0.2f, 0.2f);
-		    body.createFixture(shape, 5);
-			body.applyLinearImpulse(ship.getBody().getLinearVelocity().add(defDir.mul(100)), body.getPosition(), true);
+	}
+	
+	public synchronized void fire(){
+		long newTime = System.currentTimeMillis();
+		if(newTime-lastShotTime < reloadTime){
+			return;
 		}
-		
+		lastShotTime = newTime;
+		Mat22 m = Mat22.createRotationalTransform(ship.getBody().getAngle());
+
+		for(int i = 0; i < stdCannonPos.length; i++){
+			Vec2 pos = ship.getBody().getPosition().add(m.mul(stdCannonPos[i]));
+			Vec2 dir = m.mul(stdDir);		
+			new Shot(shotType, pos, dir, world);
+			
+		}		
 	}
 
 }
