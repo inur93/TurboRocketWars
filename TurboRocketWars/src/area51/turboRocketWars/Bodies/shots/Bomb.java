@@ -33,7 +33,7 @@ public class Bomb  extends Shot implements Runnable{
 		shape.setAsBox(0.4f, 0.4f);
 	    body.createFixture(shape, 15);
 		body.applyLinearImpulse(dir.mul(impFactor), pos, true);
-		body.setUserData(new UserDataProp(SettingsFinal.USER_DATA_SHOT, Color.WHITE, 1, true));
+		body.setUserData(new UserDataProp(SettingsFinal.USER_DATA_SHOT, Color.WHITE, 1, true, this));
 		new Thread(this).start();
 	}
 

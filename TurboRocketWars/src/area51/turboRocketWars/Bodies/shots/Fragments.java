@@ -29,7 +29,7 @@ public class Fragments extends Shot {
 		shape.setAsBox(0.2f, 0.2f);
 	    body.createFixture(shape, 15);
 		body.applyLinearImpulse(dir.mul(impFactor), pos, true);
-		body.setUserData(new UserDataProp(SettingsFinal.USER_DATA_SHOT, Color.WHITE, 1, true));
+		body.setUserData(new UserDataProp(SettingsFinal.USER_DATA_SHOT, Color.WHITE, 1, true, this));
 	}
 
 	public static class FragmentFactory implements Factory<Fragments>{

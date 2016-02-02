@@ -16,9 +16,9 @@ public class KeyBoardConfigurations {
 	public final int SHOT2;
 	public final int SHOT3;
 	
-	private int[] WASD_KEYS = new int[]{	VK_W, VK_A, 	VK_D, 		VK_1, VK_2, VK_3};
-	private int[] ARROW_KEYS = new int[]{	VK_UP,VK_LEFT, 	VK_RIGHT, 	VK_B, VK_N, VK_M};
-	private int[] SP_KEYS = new int[]{		VK_UP,VK_LEFT, 	VK_RIGHT, 	VK_1, VK_2, VK_3};
+	private int[] WASD_KEYS = new int[]{	VK_W, VK_A, 	VK_D, 		VK_S, VK_2, VK_3};
+	private int[] ARROW_KEYS = new int[]{	VK_UP,VK_LEFT, 	VK_RIGHT, 	VK_DOWN, VK_N, VK_M};
+	private int[] SP_KEYS = new int[]{		VK_UP,VK_LEFT, 	VK_RIGHT, 	VK_DOWN, VK_2, VK_3};
 
 	private static int CONFIG_OCCUPIED;
 	private final int[] CONFIG_SELECTED;

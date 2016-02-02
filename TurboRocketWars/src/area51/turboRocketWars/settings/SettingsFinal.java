@@ -15,7 +15,11 @@ public class SettingsFinal {
 	public static final String USER_DATA_SHOT = "shot";
 	public static final String USER_DATA_SHIP = "ship";
 	public static final String USER_DATA_MAP = "map";
+	public static final String USER_DATA_PLATFORM = "platform";
 	
 	public static final int GRAPHICS_UPDATE_RATE = 1000/60;
 	public static final float CAMERA_ZOOM = 2;
+	public static final float PLATFORM_FRICTION = 10;
+	public static final double MAX_DAMAGE = 200;
+	public static final float LANDING_ANGLE_TOLERANCE = 0.2f;
 }

@@ -63,9 +63,9 @@ public class Ship{
 		this.world = world;
 		this.body = getNewBody(position.clone(), world);
 		
-		this.cannonStd = new Cannon<NormalShot>(new NormalShotFactory(), 1, true, 100,world, this);
+		this.cannonStd = new Cannon<NormalShot>(new NormalShotFactory(), 1, true, 400,world, this);
 		this.cannon1 = new Cannon<Bomb>(new Bomb.BombFactory(), 1, false, 1000, world, this);
-		this.cannon2 = new Cannon<NormalShot>(new NormalShotFactory(), 3, true, 300, world, this);
+		this.cannon2 = new Cannon<NormalShot>(new NormalShotFactory(), 3, true, 600, world, this);
 		
 		
 		ships.add(this);

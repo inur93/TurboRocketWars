@@ -44,5 +44,8 @@ public abstract class Shot implements Delegate {
 		return this.damage;
 	}
 	
+	public Body getBody(){
+		return this.body;
+	}
 
 }

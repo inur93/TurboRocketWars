@@ -35,7 +35,7 @@ public class Cannon<T extends Shot> {
 			break;
 		case 3:
 		default: 
-			cannonPos = new Vec2[]{new Vec2(2.5f, 4), new Vec2(0,7), new Vec2(-2.5f, 4)};
+			cannonPos = new Vec2[]{new Vec2(2.5f, 7), new Vec2(0,10), new Vec2(-2.5f, 7)};
 			break;
 		}
 
