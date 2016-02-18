@@ -14,8 +14,8 @@ import area51.turboRocketWars.settings.SettingsFinal;
 public class Fragments extends Shot {
 
 	private float impFactor = 150;
-	public Fragments(Vec2 pos, Vec2 dir, World world) {
-		super(pos, dir, world);
+	public Fragments(Vec2 initialVel, Vec2 pos, Vec2 dir, World world) {
+		super(initialVel, pos, dir, world);
 		
 	}
 
@@ -34,8 +34,8 @@ public class Fragments extends Shot {
 
 	public static class FragmentFactory implements Factory<Fragments>{
 
-		public Fragments factory(Vec2 pos, Vec2 dir, World world) {
-			return new Fragments(pos, dir, world);
+		public Fragments factory(Vec2 initialVel, Vec2 pos, Vec2 dir, World world) {
+			return new Fragments(initialVel, pos, dir, world);
 		}
 		
 	}

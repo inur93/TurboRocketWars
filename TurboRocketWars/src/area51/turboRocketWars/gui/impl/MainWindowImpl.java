@@ -21,8 +21,9 @@ public class MainWindowImpl extends JFrame implements MainWindow {
 	ArrayList<JPanel> panels = new ArrayList<JPanel>();
 	JPanel masterPanel;
 	public MainWindowImpl(){
-		this.setExtendedState(MAXIMIZED_BOTH);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
+//		this.setExtendedState(MAXIMIZED_BOTH);
+//		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setBounds(0, 0, 800, 600);
 		setUndecorated(true);
 		setAlwaysOnTop(true);
 		setVisible(true);

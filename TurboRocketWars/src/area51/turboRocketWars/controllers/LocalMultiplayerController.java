@@ -1,6 +1,15 @@
 package area51.turboRocketWars.controllers;
 
-import java.awt.Color;
+import static area51.turboRocketWars.settings.SettingsEditable.DEF_GRAVITY_X;
+import static area51.turboRocketWars.settings.SettingsEditable.DEF_GRAVITY_Y;
+import static area51.turboRocketWars.settings.SettingsFinal.LANDING_ANGLE_TOLERANCE;
+import static area51.turboRocketWars.settings.SettingsFinal.MAX_DAMAGE;
+import static area51.turboRocketWars.settings.SettingsFinal.USER_DATA_MAP;
+import static area51.turboRocketWars.settings.SettingsFinal.USER_DATA_PLATFORM;
+import static area51.turboRocketWars.settings.SettingsFinal.USER_DATA_SHIP;
+import static area51.turboRocketWars.settings.SettingsFinal.USER_DATA_SHOT;
+
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -9,48 +18,44 @@ import javax.swing.JPanel;
 import org.jbox2d.callbacks.ContactImpulse;
 import org.jbox2d.callbacks.ContactListener;
 import org.jbox2d.collision.Manifold;
-import org.jbox2d.collision.shapes.ChainShape;
-import org.jbox2d.collision.shapes.EdgeShape;
-import org.jbox2d.collision.shapes.PolygonShape;
-import org.jbox2d.common.Mat22;
 import org.jbox2d.common.MathUtils;
 import org.jbox2d.common.OBBViewportTransform;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
-import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.World;
 import org.jbox2d.dynamics.contacts.Contact;
 
 import area51.turboRocketWars.Bodies.Delegate;
 import area51.turboRocketWars.Bodies.Ship;
+import area51.turboRocketWars.Bodies.maps.Map;
 import area51.turboRocketWars.Bodies.shots.Shot;
 import area51.turboRocketWars.Bodies.userData.UserDataProp;
 import area51.turboRocketWars.gui.MainGamePanel;
 import area51.turboRocketWars.gui.MainWindow;
 import area51.turboRocketWars.gui.impl.MainGamePanelImpl;
-import area51.turboRocketWars.gui.impl.MainMenuPanelImpl;
 import area51.turboRocketWars.gui.impl.MainWindowImpl;
-import area51.turboRocketWars.maps.MapGenerator;
 import area51.turboRocketWars.settings.KeyBoardConfigurations;
 import area51.turboRocketWars.settings.SettingsFinal;
-import static area51.turboRocketWars.settings.SettingsFinal.*;
 
 public class LocalMultiplayerController implements Runnable, ContactListener{
 
 	private MainWindow window;
 	private World world;
 	private JPanel[] panels = new JPanel[2];
+	
+	//TODO figure out a better way to handle this. should not be this many queues and lists
 	public static Queue<Body> bodiesToDelete = new LinkedList<Body>();
 	public Queue<Ship> shipsToKill = new LinkedList<Ship>();
-
+	public static ArrayList<Shot> shots = new ArrayList<Shot>();
 	public static Queue<Delegate> delegates = new LinkedList<Delegate>();
 
 	public LocalMultiplayerController() {
 		window = new MainWindowImpl();
-		world = new World(new Vec2(0, -10));
+		world = new World(new Vec2(DEF_GRAVITY_X, DEF_GRAVITY_Y));
 
-		MapGenerator.createMap(0, world);
+		Map.createDefaultMap(world);
 
+		//TODO create convenience method in map to find ships starting positions
 		Ship ship1 = new Ship(world, new Vec2(-390, 30));
 		Ship ship2 = new Ship(world, new Vec2(410, 220));
 
@@ -92,6 +97,8 @@ public class LocalMultiplayerController implements Runnable, ContactListener{
 				world.destroyBody(s.getBody());
 				s.die();
 			}
+			
+			removeTimedOutShots();
 
 			while(!delegates.isEmpty()) delegates.remove().execute();
 
@@ -109,21 +116,21 @@ public class LocalMultiplayerController implements Runnable, ContactListener{
 		window.setMenu();
 	}
 
-	public static void main(String[] args) {
-		new LocalMultiplayerController();
+	private void removeTimedOutShots() {
+		Body parent = world.getBodyList();
+		do{
+			UserDataProp userData = (UserDataProp) parent.getUserData();
+			Shot shot;
+			if((shot = userData.shot) != null){
+				if(shot.hasTimedOut()){
+					shot.destroy();
+				}
+			}
+		}while((parent = parent.getNext()) != null);
 	}
 
-//	private void shotContact(Body a, UserDataProp aData, Body b, UserDataProp bData){
-//		if(aData.bodyType.equals(USER_DATA_SHIP)){
-//			shipHit(a, bData.shot.getDamage());
-//		}else if(bData.bodyType.equals(USER_DATA_SHIP)){
-//			shipHit(b, aData.shot.getDamage());
-//		}
-//
-//	}
-
-	private void shipHit(Body ship, double damage){
-		
+	public static void main(String[] args) {
+		new LocalMultiplayerController();
 	}
 
 	public Ship identifyShip(Body body){
@@ -176,6 +183,7 @@ public class LocalMultiplayerController implements Runnable, ContactListener{
 				shotCollidingShip(identifyShip(a), bData.shot);
 				break;
 			case USER_DATA_PLATFORM:
+				System.out.println("landing.... ship->platform");
 				attemptLanding(identifyShip(a), b);
 				break;
 			case USER_DATA_MAP:
@@ -210,39 +218,6 @@ public class LocalMultiplayerController implements Runnable, ContactListener{
 				shipsToKill.add(s);
 			}
 		}
-//		if(aData.bodyType.equalsIgnoreCase(USER_DATA_SHOT) ||
-//				bData.bodyType.equals(USER_DATA_SHOT)){
-//			shotContact(a, aData, b, bData);
-//		}
-//		if(((UserDataProp)a.getUserData()).bodyType.equals(USER_DATA_SHOT)){
-//			//			System.out.println(a.getUserData() + "==" + b.getUserData());
-//			bodiesToDelete.add(a);
-//			if(((UserDataProp)b.getUserData()).bodyType.equals(USER_DATA_SHIP)){
-//				for(Ship s : Ship.ships){
-//					System.out.println(s.getCurHitPoints());
-//					if(b.equals(s.getBody())){
-//						s.attack(aData.shot.getDamage());
-//						if(s.getCurHitPoints() <= 0){
-//							shipsToKill.add(s);
-//						}
-//					}
-//				}
-//			}
-////		}
-//		if(((UserDataProp)b.getUserData()).bodyType.equals(SettingsFinal.USER_DATA_SHOT)){
-//			bodiesToDelete.add(b);
-//			if(((UserDataProp)a.getUserData()).bodyType.equals(SettingsFinal.USER_DATA_SHIP)){
-//				for(Ship s : Ship.ships){
-//					if(a.equals(s.getBody())){
-//						s.attack(5);
-//						if(s.getCurHitPoints() <= 0){
-//							//							bodiesToDelete.add(b);
-//							shipsToKill.add(s);
-//						}
-//					}
-//				}
-//			}
-//		}
 	}
 
 	private void shotCollidingShot(Shot shota, Shot shotb) {
@@ -264,6 +239,7 @@ public class LocalMultiplayerController implements Runnable, ContactListener{
 		float angle = Math.abs(ship.getBody().getAngle()%MathUtils.TWOPI);
 		if(angle < LANDING_ANGLE_TOLERANCE || angle > MathUtils.TWOPI-LANDING_ANGLE_TOLERANCE){
 			//TODO LAND
+			ship.lockRotation();
 		}else{
 			ship.attack(MAX_DAMAGE);
 		}
@@ -278,8 +254,19 @@ public class LocalMultiplayerController implements Runnable, ContactListener{
 	}
 
 	public void endContact(Contact contact) {
-		// TODO Auto-generated method stub
-
+		Body a = contact.getFixtureA().getBody();
+		Body b = contact.getFixtureB().getBody();
+		UserDataProp aData = (UserDataProp) a.getUserData();
+		UserDataProp bData = (UserDataProp) b.getUserData();
+		if(aData.bodyType.equals(USER_DATA_SHIP)){
+//			System.out.println("endcontact: " + aData.bodyType + "==" + bData.bodyType);
+			identifyShip(a).unlockRotation();
+		}
+		else if(bData.bodyType.equals(USER_DATA_SHIP)){
+//			System.out.println("endcontact: " + aData.bodyType + "==" + bData.bodyType);
+			identifyShip(b).unlockRotation();
+		}
+		
 	}
 
 	public void preSolve(Contact contact, Manifold oldManifold) {

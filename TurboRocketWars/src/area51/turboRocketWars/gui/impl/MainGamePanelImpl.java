@@ -33,7 +33,25 @@ public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	private final int WIN_LOOSE_FONT_SIZE = 140;
+
 	public static final int SCREEN_DRAG_BUTTON = 3;
+	public static final String HEART_ASCII_CODE = "\u2764";
+
+	private final static int BAR_LENGTH = 100;
+	private final static int BAR_THICKNESS = 10;
+
+	private final static int TXT_COL1_OFFSET = 15;
+	private final static int TXT_ROW1_OFFSET = 15;
+
+	private final static int TXT_COL2_OFFSET = 60;
+	private final static int TXT_ROW2_OFFSET = 35;
+
+	private final static int TXT_COL3_OFFSET = 180;
+	private final static int TXT_ROW3_OFFSET = 35;
+
+	private final static int TXT_COL4_OFFSET = 240;
+	private final static int TXT_ROW4_OFFSET = 35;
 
 	private volatile World world;
 	private volatile Ship ship;
@@ -45,6 +63,8 @@ public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 	private OBBViewportTransform camera;
 	public volatile boolean stopped = false;
 
+
+
 	public MainGamePanelImpl(World world, Ship ship, OBBViewportTransform camera) {
 		this.ship = ship;
 		this.world = world;
@@ -52,7 +72,7 @@ public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 		this.camera.setYFlip(true);
 		setBackground(Color.black);
 	}
-	
+
 	public void setWorld(World world){
 		this.world = world;
 	}
@@ -62,7 +82,7 @@ public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 		super.setBounds(x, y, width, height);
 		camera.setExtents(width/2, height/2);
 	};
-	
+
 	public void paintPolygon(Graphics2D g,Body body, PolygonShape poly){
 
 		Vec2[] vertices = poly.getVertices();
@@ -73,7 +93,7 @@ public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 			body.getWorldPointToOut((vertices[i%poly.getVertexCount()]), v1);
 			camera.getWorldToScreen(v1, v1);
 			p.addPoint((int) v1.x, (int) v1.y);
-			
+
 		}
 		UserDataProp viewProp = null;
 		Object ud = body.getUserData();
@@ -88,7 +108,7 @@ public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 			g.setColor(Color.black);
 			g.drawPolygon(p);
 		}
-		
+
 	}
 
 	public void paintCircle(Graphics2D g, Body body, CircleShape circle){
@@ -107,24 +127,24 @@ public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 	}
 
 	private void paintChain(Graphics2D g, Body body, ChainShape chain) {
-		
+
 		UserDataProp viewProp = null;
 		if((viewProp = (UserDataProp) body.getUserData()) != null){
 			g.setColor(viewProp.color);
 			g.setStroke(new BasicStroke(viewProp.stroke));
 		}else{
-			
+
 		}
 		for(int i = 1; i < chain.m_count; i++){
 			Vec2 v1 = new Vec2();
 			Vec2 v2 = new Vec2();	
-			
+
 			body.getWorldPointToOut(chain.m_vertices[i-1], v1);
 			body.getWorldPointToOut(chain.m_vertices[i], v2);
-			
+
 			camera.getWorldToScreen(v1, v1);
 			camera.getWorldToScreen(v2, v2);
-			
+
 			g.drawLine((int) v1.x, (int) v1.y, (int) v2.x, (int) v2.y);
 		}
 	}
@@ -140,46 +160,60 @@ public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 		g.drawLine((int) v1.x, (int) v1.y, (int) v2.x, (int) v2.y);
 	}
 
+	private void drawTestGrid(Graphics2D g){
+
+		for(int i = 0; i<40; i++){
+			if(i%2 > 0) {
+				g.setColor(Color.red.darker());
+			}else{
+				g.setColor(Color.blue.darker());
+			}
+			Vec2 v1 = new Vec2(-500, i*30);
+			Vec2 v2 = new Vec2(500, i*30);
+
+			Vec2 v3 = new Vec2(-500+i*30, -500);
+			Vec2 v4 = new Vec2(-500+i*30, 500);
+
+			camera.getWorldToScreen(v1, v1);
+			camera.getWorldToScreen(v2, v2);
+
+			camera.getWorldToScreen(v3, v3);
+			camera.getWorldToScreen(v4, v4);
+
+			g.drawLine((int)v1.x, (int)v1.y, (int) v2.x,(int)v2.y);
+			g.drawLine((int)v3.x, (int)v3.y, (int) v4.x,(int)v4.y);
+
+		}
+	}
 
 	@Override
 	protected synchronized void paintComponent(Graphics graphics) {
-		
+
 		Graphics2D g = (Graphics2D) graphics;
-		
+
 		super.paintComponent(g);
 		if(world == null) return;
-		
+
+		drawTestGrid(g);
+
 		Body body = world.getBodyList();
-		double ratio = 200/ship.getMaxHitPoints();
-		double hp = ship.getCurHitPoints();
-		g.setStroke(new BasicStroke(10));
-		g.setFont(new Font(TOOL_TIP_TEXT_KEY, Font.BOLD, 12));
-		g.setColor(Color.red);
-		g.drawString("HP: ", 10, 15);
-		g.drawLine(60, 10, 60+200, 10);
-		g.setColor(Color.green);
-		if(hp > 0){
-		g.drawLine(60, 10,60+(int)(hp *ratio) , 10);
-		}
-		g.setColor(Color.red);
-		g.drawString("Lives: ", 10, 35);
-		g.setColor(Color.green);
-		String lives = "";
-		for(int i = 0; i < ship.getLives(); i++){
-			lives += "\u2764";
-		}
-		g.drawString(lives, 55, 35);
-		
+
+		drawHPBar(g);
+
+		dawLivesInfo(g);
+
+		drawAmmoInfo(g);
+
 		if(ship.getLives() <= 0){
-			g.setFont(new Font(Font.SERIF, Font.BOLD, 140));
+			g.setFont(new Font(Font.SERIF, Font.BOLD, WIN_LOOSE_FONT_SIZE));
 			g.drawString("GAME OVER", 50, getHeight()/2);;
 		}else
-		if(ship.isWinner()){
-			g.setFont(new Font(Font.SERIF, Font.BOLD, 140));
-			g.drawString("YOU WIN", 50, getHeight()/2);
-		}
+			if(ship.isWinner()){
+				g.setFont(new Font(Font.SERIF, Font.BOLD, WIN_LOOSE_FONT_SIZE));
+				g.drawString("YOU WIN", 50, getHeight()/2);
+			}
 		if(ship.getLives() > 0){
-		camera.setCamera(ship.getBody().getPosition().x, ship.getBody().getPosition().y, SettingsFinal.CAMERA_ZOOM);
+			camera.setCamera(ship.getBody().getPosition().x, ship.getBody().getPosition().y, SettingsFinal.CAMERA_ZOOM);
 		} else{
 			camera.setCamera(ship.getSpawPoint().x, ship.getSpawPoint().y, 5);
 		}
@@ -205,7 +239,62 @@ public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 				}
 			}while((fix = fix.getNext()) != null);	
 		}while((body = body.getNext()) != null);
-	};
+	}
+
+	private void drawAmmoInfo(Graphics2D g) {
+
+		double ratio = BAR_LENGTH/ship.getMaxHitPoints();
+		double hp = ship.getCurHitPoints();
+
+		g.setStroke(new BasicStroke(BAR_THICKNESS));
+		g.setFont(new Font(TOOL_TIP_TEXT_KEY, Font.BOLD, 12));
+		g.setColor(Color.red);
+
+		int BAR_Y = TXT_ROW1_OFFSET-BAR_THICKNESS/2;
+		g.drawString("Ammo: ", TXT_COL3_OFFSET, TXT_ROW1_OFFSET);
+
+		g.drawLine(	TXT_COL4_OFFSET, 			BAR_Y, 
+					TXT_COL4_OFFSET+BAR_LENGTH, BAR_Y);
+
+		g.setColor(Color.yellow);
+		if(hp > 0){
+			g.drawLine(	TXT_COL4_OFFSET, 					BAR_Y,
+						TXT_COL4_OFFSET+(int)(hp *ratio) , 	BAR_Y);
+		}
+	}
+
+	private void dawLivesInfo(Graphics2D g) {
+		g.setColor(Color.red);
+		g.drawString("Lives: ", TXT_COL1_OFFSET, TXT_ROW2_OFFSET);
+		g.setColor(Color.green);
+		String lives = "";
+		for(int i = 0; i < ship.getLives(); i++){
+			lives += HEART_ASCII_CODE;
+		}
+		g.drawString(lives, TXT_COL2_OFFSET, TXT_ROW2_OFFSET);
+	}
+
+	private void drawHPBar(Graphics2D g){
+		// draw hitpoint bar hpleft/hptotal and text
+		double ratio = BAR_LENGTH/ship.getMaxHitPoints();
+		double hp = ship.getCurHitPoints();
+		
+		g.setStroke(new BasicStroke(BAR_THICKNESS));
+		g.setFont(new Font(TOOL_TIP_TEXT_KEY, Font.BOLD, 12));
+		g.setColor(Color.red);
+		int BAR_Y = TXT_ROW1_OFFSET-BAR_THICKNESS/2;
+
+		g.drawString("HP: ", TXT_COL1_OFFSET, TXT_ROW1_OFFSET);
+
+		g.drawLine(	TXT_COL2_OFFSET, 			BAR_Y, 
+					TXT_COL2_OFFSET+BAR_LENGTH, BAR_Y);
+
+		g.setColor(Color.green);
+		if(hp > 0){
+			g.drawLine(	TXT_COL2_OFFSET, 					BAR_Y,
+						TXT_COL2_OFFSET+(int)(hp *ratio) , 	BAR_Y);
+		}
+	}
 
 	public void delay(long msec){
 		try {
@@ -245,10 +334,10 @@ public class MainGamePanelImpl extends JPanel implements MainGamePanel {
 
 	public void run() {
 		while(true){
-		repaint();
-		try {
-			Thread.sleep(SettingsFinal.GRAPHICS_UPDATE_RATE);
-		} catch (InterruptedException e) {}
+			repaint();
+			try {
+				Thread.sleep(SettingsFinal.GRAPHICS_UPDATE_RATE);
+			} catch (InterruptedException e) {}
 		}
 	}
 

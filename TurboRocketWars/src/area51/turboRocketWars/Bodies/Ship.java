@@ -35,7 +35,7 @@ import area51.turboRocketWars.settings.SettingsFinal;
 public class Ship{
 
 	private static Vec2[] shapeVectors = new Vec2[]{new Vec2(-4f,-5f), new Vec2(0f,-2f), new Vec2(4f,-5f), new Vec2(0f,5f)};
-	private Vec2 boostVec = new Vec2(0,200);
+	private Vec2 boostVec = new Vec2(0,50);
 	
 	private int lives = 5;
 	private double maxHitPoints = 100;
@@ -45,9 +45,12 @@ public class Ship{
 	private String type;
 	private volatile Body body;
 	private volatile World world;
+	private int ammo = 40;
 	private Cannon cannonStd;
 	private Cannon cannon1;
 	private Cannon cannon2;
+	
+	private boolean isRotationLocked = false;
 	
 	private boolean isWinner = false;
 	
@@ -63,9 +66,9 @@ public class Ship{
 		this.world = world;
 		this.body = getNewBody(position.clone(), world);
 		
-		this.cannonStd = new Cannon<NormalShot>(new NormalShotFactory(), 1, true, 400,world, this);
-		this.cannon1 = new Cannon<Bomb>(new Bomb.BombFactory(), 1, false, 1000, world, this);
-		this.cannon2 = new Cannon<NormalShot>(new NormalShotFactory(), 3, true, 600, world, this);
+		this.cannonStd = new Cannon<NormalShot>(new NormalShotFactory(), 1, true, 200,world, this);
+		this.cannon1 = new Cannon<Bomb>(new Bomb.BombFactory(), 1, false, 700, world, this);
+		this.cannon2 = new Cannon<NormalShot>(new NormalShotFactory(), 3, true, 300, world, this);
 		
 		
 		ships.add(this);
@@ -88,10 +91,17 @@ public class Ship{
 		fixtureDef.friction = 0.3f;
 
 		B2Separator.seperate(body, fixtureDef, shapeVectors, 1);
-		body.setUserData(new UserDataProp(SettingsFinal.USER_DATA_SHIP, getNextColor(), 1, true));
+		body.setUserData(new UserDataProp(SettingsFinal.USER_DATA_SHIP, getNextColor(), 1, true, this));
 		return body;
 	}
+	
+	public void lockRotation(){
+		isRotationLocked = true;
+	}
 
+	public void unlockRotation(){
+		isRotationLocked = false;
+	}
 	public String getId(){
 		return this.id;
 	}
@@ -130,10 +140,15 @@ public class Ship{
 		cannon2.fire();
 	}
 	
+	public boolean hasAmmo(int amount){
+		if(this.ammo >= amount) return true;
+		return false;
+	}
+	
 	public void boost(){
 		if(this.lives <= 0) return;
 		float angle = body.m_sweep.a;
-		body.setAngularVelocity(0);
+		body.setAngularVelocity(0); // easier to fly
 		Mat22 m = Mat22.createRotationalTransform(angle);
 		body.applyLinearImpulse(m.mul(boostVec), body.getPosition(), true);
 		
@@ -141,12 +156,14 @@ public class Ship{
 	
 	public void yawLeft(){
 		if(this.lives <= 0) return;
+		if(isRotationLocked) return;
 		body.setAngularVelocity(0);
 		body.m_sweep.a += 0.1;
 	}
 	
 	public void yawRight(){
 		if(this.lives <= 0) return;
+		if(isRotationLocked) return;
 		body.setAngularVelocity(0);
 		body.m_sweep.a -= 0.1;
 	}

@@ -1,6 +1,7 @@
 package area51.turboRocketWars.Bodies.cannons;
 
 import org.jbox2d.common.Mat22;
+import org.jbox2d.common.MathUtils;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.World;
 
@@ -45,13 +46,12 @@ public class Cannon<T extends Shot> {
 	}
 
 	public synchronized void fire(){
-		
-		Mat22 m = Mat22.createRotationalTransform(ship.getBody().getAngle());
+		Mat22 m = Mat22.createRotationalTransform(ship.getBody().getAngle()%MathUtils.TWOPI);
 
 		for(int i = 0; i < cannonPos.length; i++){
 			Vec2 pos = ship.getBody().getPosition().add(m.mul(cannonPos[i]));
 			Vec2 dir = m.mul(cannonDirection);
-			factory.factory(pos, dir, world);
+			factory.factory(ship.getBody().getLinearVelocity(), pos, dir, world);
 		}		
 	}
 	

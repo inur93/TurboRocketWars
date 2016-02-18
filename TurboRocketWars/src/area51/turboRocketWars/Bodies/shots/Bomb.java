@@ -18,8 +18,8 @@ public class Bomb  extends Shot implements Runnable{
 	private float impFactor = 20;
 	private long timeToDetonate = 1000; // msec
 	private int numberFragments = 20;
-	public Bomb(Vec2 pos, Vec2 dir, World world) {
-		super(pos, dir, world);
+	public Bomb(Vec2 initialVel, Vec2 pos, Vec2 dir, World world) {
+		super(initialVel, pos, dir, world);
 		this.damage = 20;
 	}
 
@@ -39,8 +39,8 @@ public class Bomb  extends Shot implements Runnable{
 
 	public static class BombFactory implements Factory<Bomb>{
 
-		public Bomb factory(Vec2 pos, Vec2 dir, World world) {
-			return new Bomb(pos, dir, world);
+		public Bomb factory(Vec2 initialVel, Vec2 pos, Vec2 dir, World world) {
+			return new Bomb(initialVel, pos, dir, world);
 		}
 		
 	}
@@ -57,7 +57,7 @@ public class Bomb  extends Shot implements Runnable{
 		double step = Math.PI*2/numberFragments;
 		for(int i = 0; i < numberFragments; i++){
 			Mat22 m = Mat22.createRotationalTransform((float) step*i);
-			new Fragments(this.pos.add(m.mul(d).mul(7f)), m.mul(d), world);
+			new Fragments(new Vec2(), this.pos.add(m.mul(d).mul(7f)), m.mul(d), world);
 		}
 		LocalMultiplayerController.bodiesToDelete.add(this.body);
 	}
