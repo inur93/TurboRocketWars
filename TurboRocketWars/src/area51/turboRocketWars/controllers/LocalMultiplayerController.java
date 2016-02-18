@@ -31,9 +31,11 @@ import area51.turboRocketWars.Bodies.maps.Map;
 import area51.turboRocketWars.Bodies.shots.Shot;
 import area51.turboRocketWars.Bodies.userData.UserDataProp;
 import area51.turboRocketWars.gui.MainGamePanel;
+import area51.turboRocketWars.gui.MainGamePanel;
 import area51.turboRocketWars.gui.MainWindow;
-import area51.turboRocketWars.gui.impl.MainGamePanelImpl;
-import area51.turboRocketWars.gui.impl.MainWindowImpl;
+import area51.turboRocketWars.gui.MainWindow;
+import area51.turboRocketWars.regeneration.AmmoRegen;
+import area51.turboRocketWars.regeneration.HPRegen;
 import area51.turboRocketWars.settings.KeyBoardConfigurations;
 import area51.turboRocketWars.settings.SettingsFinal;
 
@@ -50,7 +52,7 @@ public class LocalMultiplayerController implements Runnable, ContactListener{
 	public static Queue<Delegate> delegates = new LinkedList<Delegate>();
 
 	public LocalMultiplayerController() {
-		window = new MainWindowImpl();
+		window = new MainWindow();
 		world = new World(new Vec2(DEF_GRAVITY_X, DEF_GRAVITY_Y));
 
 		Map.createDefaultMap(world);
@@ -62,8 +64,8 @@ public class LocalMultiplayerController implements Runnable, ContactListener{
 		OBBViewportTransform camera1 = new OBBViewportTransform();
 		OBBViewportTransform camera2 = new OBBViewportTransform();
 
-		MainGamePanel panel1 = new MainGamePanelImpl(world, ship1, camera1);
-		MainGamePanel panel2 = new MainGamePanelImpl(world, ship2, camera2);
+		MainGamePanel panel1 = new MainGamePanel(world, ship1, camera1);
+		MainGamePanel panel2 = new MainGamePanel(world, ship2, camera2);
 
 		panels[0] = panel1.getPanel();
 		panels[1] = panel2.getPanel();
@@ -240,6 +242,8 @@ public class LocalMultiplayerController implements Runnable, ContactListener{
 		if(angle < LANDING_ANGLE_TOLERANCE || angle > MathUtils.TWOPI-LANDING_ANGLE_TOLERANCE){
 			//TODO LAND
 			ship.lockRotation();
+			ship.regenerateAmmo();
+			ship.regenerateHP();
 		}else{
 			ship.attack(MAX_DAMAGE);
 		}
@@ -258,13 +262,20 @@ public class LocalMultiplayerController implements Runnable, ContactListener{
 		Body b = contact.getFixtureB().getBody();
 		UserDataProp aData = (UserDataProp) a.getUserData();
 		UserDataProp bData = (UserDataProp) b.getUserData();
+		Ship shipA = identifyShip(a);
+		Ship shipB = identifyShip(b);
+		
 		if(aData.bodyType.equals(USER_DATA_SHIP)){
 //			System.out.println("endcontact: " + aData.bodyType + "==" + bData.bodyType);
-			identifyShip(a).unlockRotation();
+			shipA.unlockRotation();
+			shipA.stopRegenerateAmmo();
+			shipA.stopRegenerateHP();
 		}
 		else if(bData.bodyType.equals(USER_DATA_SHIP)){
 //			System.out.println("endcontact: " + aData.bodyType + "==" + bData.bodyType);
-			identifyShip(b).unlockRotation();
+			shipB.unlockRotation();
+			shipB.stopRegenerateAmmo();
+			shipB.stopRegenerateHP();
 		}
 		
 	}

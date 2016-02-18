@@ -15,6 +15,7 @@ import area51.turboRocketWars.settings.SettingsFinal;
 
 public class Bomb  extends Shot implements Runnable{
 
+	private static int BOMB_AMMO_COST = 1;
 	private float impFactor = 20;
 	private long timeToDetonate = 1000; // msec
 	private int numberFragments = 20;
@@ -31,7 +32,7 @@ public class Bomb  extends Shot implements Runnable{
 		body = world.createBody(bodyDef);
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(0.4f, 0.4f);
-	    body.createFixture(shape, 15);
+		body.createFixture(shape, 15);
 		body.applyLinearImpulse(dir.mul(impFactor), pos, true);
 		body.setUserData(new UserDataProp(SettingsFinal.USER_DATA_SHOT, Color.WHITE, 1, true, this));
 		new Thread(this).start();
@@ -42,7 +43,10 @@ public class Bomb  extends Shot implements Runnable{
 		public Bomb factory(Vec2 initialVel, Vec2 pos, Vec2 dir, World world) {
 			return new Bomb(initialVel, pos, dir, world);
 		}
-		
+		@Override
+		public int getAmmoCost() {
+			return BOMB_AMMO_COST;
+		}
 	}
 
 	public void run() {
@@ -52,7 +56,7 @@ public class Bomb  extends Shot implements Runnable{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		Vec2 d = new Vec2(0, 1);
 		double step = Math.PI*2/numberFragments;
 		for(int i = 0; i < numberFragments; i++){

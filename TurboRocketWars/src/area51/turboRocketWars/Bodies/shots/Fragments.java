@@ -13,6 +13,7 @@ import area51.turboRocketWars.settings.SettingsFinal;
 
 public class Fragments extends Shot {
 
+	private static int FRAGMENTS_AMMO_COST = 1;
 	private float impFactor = 150;
 	public Fragments(Vec2 initialVel, Vec2 pos, Vec2 dir, World world) {
 		super(initialVel, pos, dir, world);
@@ -36,6 +37,11 @@ public class Fragments extends Shot {
 
 		public Fragments factory(Vec2 initialVel, Vec2 pos, Vec2 dir, World world) {
 			return new Fragments(initialVel, pos, dir, world);
+		}
+		
+		@Override
+		public int getAmmoCost() {
+			return FRAGMENTS_AMMO_COST;
 		}
 		
 	}

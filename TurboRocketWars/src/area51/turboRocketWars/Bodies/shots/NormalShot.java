@@ -13,6 +13,7 @@ import area51.turboRocketWars.settings.SettingsFinal;
 
 public class NormalShot extends Shot {
 
+	private static int NORMAL_AMMO_COST = 1;
 	private final float NORMAL_SHOT_SPEED = 1000;
 	
 	/**
@@ -55,6 +56,10 @@ public class NormalShot extends Shot {
 			return new NormalShot(initialVel, pos, dir, world);
 		}
 		
+		@Override
+		public int getAmmoCost() {
+			return NORMAL_AMMO_COST;
+		}
 	}
 
 }

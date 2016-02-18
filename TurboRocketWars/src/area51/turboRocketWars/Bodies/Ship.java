@@ -30,35 +30,45 @@ import area51.turboRocketWars.Bodies.shots.Bomb;
 import area51.turboRocketWars.Bodies.shots.NormalShot;
 import area51.turboRocketWars.Bodies.shots.NormalShot.NormalShotFactory;
 import area51.turboRocketWars.Bodies.userData.UserDataProp;
+import area51.turboRocketWars.regeneration.AmmoRegen;
+import area51.turboRocketWars.regeneration.HPRegen;
 import area51.turboRocketWars.settings.SettingsFinal;
 
-public class Ship{
+public class Ship {
 
 	private static Vec2[] shapeVectors = new Vec2[]{new Vec2(-4f,-5f), new Vec2(0f,-2f), new Vec2(4f,-5f), new Vec2(0f,5f)};
 	private Vec2 boostVec = new Vec2(0,50);
 	
 	private int lives = 5;
-	private double maxHitPoints = 100;
+	private final double maxHitPoints = 100;
 	private double hitPoints = maxHitPoints;
 	
 	private String id;
 	private String type;
 	private volatile Body body;
 	private volatile World world;
-	private int ammo = 40;
+	private double regenHP = 1;
+	private int regenAmmo = 1;
+	private final int maxAmmo = 40;
+	private int ammo = maxAmmo;
 	private Cannon cannonStd;
 	private Cannon cannon1;
 	private Cannon cannon2;
 	
 	private boolean isRotationLocked = false;
-	
 	private boolean isWinner = false;
 	
-	private Vec2 spawnPoint;
+	private final Vec2 spawnPoint;
 	
-	public static ArrayList<Ship> ships = new ArrayList<Ship>();
+	public static final ArrayList<Ship> ships = new ArrayList<Ship>();
 	
 	private long timeOfLastShot = 0;
+	private long timeOfLastRegen = 0;
+	private long hpRegenFrequence = 100; // msec until next regen
+	private long ammoRegenFrequence = 150;
+	
+	private HPRegen hpRegenerator = null;
+	private AmmoRegen ammoRegen = null;
 	
 	public Ship(World world, Vec2 position) {
 		this.id = id;
@@ -68,9 +78,7 @@ public class Ship{
 		
 		this.cannonStd = new Cannon<NormalShot>(new NormalShotFactory(), 1, true, 200,world, this);
 		this.cannon1 = new Cannon<Bomb>(new Bomb.BombFactory(), 1, false, 700, world, this);
-		this.cannon2 = new Cannon<NormalShot>(new NormalShotFactory(), 3, true, 300, world, this);
-		
-		
+		this.cannon2 = new Cannon<NormalShot>(new NormalShotFactory(), 3, true, 300, world, this);	
 		ships.add(this);
 		
 	}
@@ -106,6 +114,12 @@ public class Ship{
 		return this.id;
 	}
 
+	public int getMaxAmmo(){
+		return this.maxAmmo;
+	}
+	public int getAmmoCount(){
+		return this.ammo;
+	}
 	public String getType(){
 		return this.type;
 	}
@@ -176,6 +190,48 @@ public class Ship{
 		return this.hitPoints;
 	}
 	
+	public void regenerateHP(){
+		if(hpRegenerator == null || hpRegenerator.hasStopped()){
+			hpRegenerator = new HPRegen(this);
+		}
+		if(hitPoints < maxHitPoints){
+			this.hitPoints += regenHP;
+			if(hitPoints > maxHitPoints) hitPoints = maxHitPoints;
+		}
+	}
+	
+	public void regenerateAmmo(){
+		if(ammoRegen == null || ammoRegen.hasStopped()){
+			ammoRegen = new AmmoRegen(this);
+		}
+		if(ammo < maxAmmo){
+			this.ammo += regenAmmo;
+			if(ammo > maxAmmo) ammo = maxAmmo;
+		}
+	}
+	
+	public void stopRegenerateAmmo() {
+		if(ammoRegen != null){
+			ammoRegen.stop();
+			ammoRegen = null;
+		}
+	}
+	
+	public void stopRegenerateHP() {
+		if(hpRegenerator != null){
+			hpRegenerator.stop();
+			hpRegenerator = null;
+		}
+	}
+	
+	public long getHPRegenFrequency(){
+		return this.hpRegenFrequence;
+	}
+	
+	public long getAmmoRegenFrequency(){
+		return this.ammoRegenFrequence;
+	}
+	
 	public int getLives(){
 		return this.lives;
 	}
@@ -194,11 +250,11 @@ public class Ship{
 			ships.remove(this);
 			this.lives = 0;
 			this.hitPoints = 0;
-//			this.body = null;
 			return;
 		}
 		body = getNewBody(spawnPoint.clone(), world);
 		this.hitPoints = maxHitPoints;
+		this.ammo = maxAmmo;
 		
 	}
 	
@@ -215,4 +271,14 @@ public class Ship{
 	private static Color getNextColor(){
 		return colors[(curColor = (curColor+1)%colors.length)];
 	}
+
+	public void useAmmo(int ammoCost) {
+		this.ammo-=ammoCost;
+	}
+
+	public Object getHPRegenRatio() {
+		return this.regenHP;
+	}
+
+
 }

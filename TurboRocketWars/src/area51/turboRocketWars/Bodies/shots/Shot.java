@@ -12,6 +12,7 @@ public abstract class Shot implements Delegate {
 	protected World world;
 	protected Body body;
 	protected double damage = 5; // default value
+	protected int ammoCost = 1;
 	protected Vec2 initialVel;
 	protected Vec2 pos;
 	protected Vec2 dir;
@@ -31,11 +32,20 @@ public abstract class Shot implements Delegate {
 	
 	public abstract void execute();
 	
+	/**
+	 * lifetime for shot. 
+	 * @return true if shot should be removed because of timing out. 
+	 * Otherwise false
+	 */
 	public boolean hasTimedOut(){
 		if(System.currentTimeMillis()-startTime > shotDuration){
 			return true;
 		}
 		return false;
+	}
+	
+	public int ammoCost(){
+		return this.ammoCost;
 	}
 	
 	/**

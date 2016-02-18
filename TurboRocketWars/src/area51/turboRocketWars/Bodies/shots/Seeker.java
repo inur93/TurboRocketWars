@@ -4,10 +4,10 @@ import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.World;
 
 public class Seeker extends Shot {
-
+	
+	private static int SEEKER_AMMO_COST = 1;
 	public Seeker(Vec2 initialVel, Vec2 pos, Vec2 dir, World world) {
 		super(initialVel, pos, dir, world);
-		// TODO Auto-generated constructor stub
 	}
 
 
@@ -24,6 +24,11 @@ public class Seeker extends Shot {
 
 		public Seeker factory(Vec2 initialVel, Vec2 pos, Vec2 dir, World world) {
 			return new Seeker(initialVel, pos, dir, world);
+		}
+		
+		@Override
+		public int getAmmoCost() {
+			return SEEKER_AMMO_COST;
 		}
 		
 	}
