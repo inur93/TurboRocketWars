@@ -4,51 +4,53 @@ import static java.awt.event.KeyEvent.*;
 import java.awt.event.KeyEvent;
 public class KeyBoardConfigurations {
 
-	public static final int WASD_CONFIG = 1;
-	public static final int ARROW_CONFIG = 2;
-	public static final int SP_CONFIG = 4;
-
+//	public static final int WASD_CONFIG = 1;
+//	public static final int ARROW_CONFIG = 2;
+//	public static final int IJKL_CONFIG = 4;
 
 	public final int BOOST;
 	public final int LEFT;
 	public final int RIGHT;
-	public final int SHOT1;
-	public final int SHOT2;
-	public final int SHOT3;
+	public final int SHOT_NORMAL;
+	public final int SHOT_SPECIAL;
 	
-	private int[] WASD_KEYS = new int[]{	VK_W, VK_A, 	VK_D, 		VK_S, VK_2, VK_3};
-	private int[] ARROW_KEYS = new int[]{	VK_UP,VK_LEFT, 	VK_RIGHT, 	VK_DOWN, VK_N, VK_M};
-	private int[] SP_KEYS = new int[]{		VK_UP,VK_LEFT, 	VK_RIGHT, 	VK_DOWN, VK_2, VK_3};
+	private static final int[] WASD_KEYS = new int[]{	VK_W, VK_A, 	VK_D, 		VK_S, VK_SHIFT};
+	private static final int[] ARROW_KEYS = new int[]{	VK_UP,VK_LEFT, 	VK_RIGHT, 	VK_DOWN, VK_CONTROL};
+	private static final int[] IJKL_KEYS = new int[]{		VK_I,VK_J, 	VK_L, 	VK_K, VK_H};
 
-	private static int CONFIG_OCCUPIED;
 	private final int[] CONFIG_SELECTED;
 
-	public KeyBoardConfigurations(int config) {
+	private static int CUR_KEY_CONFIG = 0;
+	private static int[][] KEY_CONFIGS = new int[][]{WASD_KEYS, ARROW_KEYS, IJKL_KEYS};
 
-		if((config & CONFIG_OCCUPIED) > 0){
-			System.err.println("config already selected. This result in unexpected behaviour");
+	/**
+	 * returns next default configuration
+	 */
+	public KeyBoardConfigurations(){
+		this(null);
+	}
+	/**
+	 * 
+	 * @param cmds array of commands. should have a minimum length of 5. Commands are taken in this order: 
+	 * 	BOOST, LEFT, RIGHT, SHOT_NORMAL, SHOT_SPECIAL
+	 */
+	public KeyBoardConfigurations(int[] cmds) {
+
+		if(cmds == null || cmds.length < 5){
+			cmds = getNext();
 		}
-		CONFIG_OCCUPIED += config;
-		int[] cmds;
-		switch(config){
-		case WASD_CONFIG:
-			cmds = WASD_KEYS;
-			break;
-		case ARROW_CONFIG:
-			cmds = ARROW_KEYS;
-			break;
-		case SP_CONFIG:
-		default:
-			cmds = SP_KEYS;
-			break;
-		}
+			
 		CONFIG_SELECTED = cmds;
 		BOOST = cmds[0];
 		LEFT = cmds[1];
 		RIGHT = cmds[2];
-		SHOT1 = cmds[3];
-		SHOT2 = cmds[4];
-		SHOT3 = cmds[5];
+		SHOT_NORMAL = cmds[3];
+		SHOT_SPECIAL = cmds[4];
+		
+	}
+	
+	private int[] getNext(){
+		return KEY_CONFIGS[CUR_KEY_CONFIG++%KEY_CONFIGS.length];
 	}
 	
 	public boolean isValid(KeyEvent k){

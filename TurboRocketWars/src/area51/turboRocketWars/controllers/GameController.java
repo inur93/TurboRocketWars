@@ -30,20 +30,19 @@ import area51.turboRocketWars.Bodies.Ship;
 import area51.turboRocketWars.Bodies.maps.Map;
 import area51.turboRocketWars.Bodies.shots.Shot;
 import area51.turboRocketWars.Bodies.userData.UserDataProp;
-import area51.turboRocketWars.gui.MainGamePanel;
-import area51.turboRocketWars.gui.MainGamePanel;
 import area51.turboRocketWars.gui.MainWindow;
 import area51.turboRocketWars.gui.MainWindow;
+import area51.turboRocketWars.gui.views.MainGamePanel;
+import area51.turboRocketWars.listeners.KeyHandler;
 import area51.turboRocketWars.regeneration.AmmoRegen;
 import area51.turboRocketWars.regeneration.HPRegen;
 import area51.turboRocketWars.settings.KeyBoardConfigurations;
 import area51.turboRocketWars.settings.SettingsFinal;
 
-public class LocalMultiplayerController implements Runnable, ContactListener{
+public class GameController implements Runnable, ContactListener{
 
-	private MainWindow window;
+	private MainController mainController;
 	private World world;
-	private JPanel[] panels = new JPanel[2];
 	
 	//TODO figure out a better way to handle this. should not be this many queues and lists
 	public static Queue<Body> bodiesToDelete = new LinkedList<Body>();
@@ -51,37 +50,10 @@ public class LocalMultiplayerController implements Runnable, ContactListener{
 	public static ArrayList<Shot> shots = new ArrayList<Shot>();
 	public static Queue<Delegate> delegates = new LinkedList<Delegate>();
 
-	public LocalMultiplayerController() {
-		window = new MainWindow();
-		world = new World(new Vec2(DEF_GRAVITY_X, DEF_GRAVITY_Y));
-
-		Map.createDefaultMap(world);
-
-		//TODO create convenience method in map to find ships starting positions
-		Ship ship1 = new Ship(world, new Vec2(-390, 30));
-		Ship ship2 = new Ship(world, new Vec2(410, 220));
-
-		OBBViewportTransform camera1 = new OBBViewportTransform();
-		OBBViewportTransform camera2 = new OBBViewportTransform();
-
-		MainGamePanel panel1 = new MainGamePanel(world, ship1, camera1);
-		MainGamePanel panel2 = new MainGamePanel(world, ship2, camera2);
-
-		panels[0] = panel1.getPanel();
-		panels[1] = panel2.getPanel();
-
-		KeyHandler keyHandler1 = new KeyHandler(new KeyBoardConfigurations(KeyBoardConfigurations.ARROW_CONFIG), ship1);
-		KeyHandler keyHandler2 = new KeyHandler(new KeyBoardConfigurations(KeyBoardConfigurations.WASD_CONFIG), ship2);
-
-		window.addWindowPanel(panel1.getPanel(), panel2.getPanel());
-
-		new Thread(panel1).start();
-		new Thread(panel2).start();
-
-		window.addKeyListener(keyHandler1);
-		window.addKeyListener(keyHandler2);
-
-		world.setContactListener(this);
+	public GameController(MainController mainController, World world) {
+		this.mainController = mainController;
+		this.world = world;
+		this.world.setContactListener(this);
 		new Thread(this).start();
 	}
 
@@ -114,8 +86,6 @@ public class LocalMultiplayerController implements Runnable, ContactListener{
 				Thread.sleep((long) (SettingsFinal.TIME_STEP*1000));
 			} catch (InterruptedException e) {}
 		}
-
-		window.setMenu();
 	}
 
 	private void removeTimedOutShots() {
@@ -129,10 +99,6 @@ public class LocalMultiplayerController implements Runnable, ContactListener{
 				}
 			}
 		}while((parent = parent.getNext()) != null);
-	}
-
-	public static void main(String[] args) {
-		new LocalMultiplayerController();
 	}
 
 	public Ship identifyShip(Body body){

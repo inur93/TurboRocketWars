@@ -5,7 +5,7 @@ import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.World;
 
 import area51.turboRocketWars.Bodies.Delegate;
-import area51.turboRocketWars.controllers.LocalMultiplayerController;
+import area51.turboRocketWars.controllers.GameController;
 
 public abstract class Shot implements Delegate {
 
@@ -25,8 +25,8 @@ public abstract class Shot implements Delegate {
 		this.dir = dir.clone();
 		this.dir.normalize();
 		this.world = world;	
-		LocalMultiplayerController.delegates.add(this);
-		LocalMultiplayerController.shots.add(this);
+		GameController.delegates.add(this);
+		GameController.shots.add(this);
 		this.startTime = System.currentTimeMillis();
 	}
 	
@@ -53,7 +53,7 @@ public abstract class Shot implements Delegate {
 	 */
 	public void destroy(){
 		world.destroyBody(getBody());
-		LocalMultiplayerController.shots.remove(this);
+		GameController.shots.remove(this);
 	}
 
 	public double getDamage(){

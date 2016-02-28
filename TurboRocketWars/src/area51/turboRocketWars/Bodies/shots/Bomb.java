@@ -10,7 +10,7 @@ import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.World;
 
 import area51.turboRocketWars.Bodies.userData.UserDataProp;
-import area51.turboRocketWars.controllers.LocalMultiplayerController;
+import area51.turboRocketWars.controllers.GameController;
 import area51.turboRocketWars.settings.SettingsFinal;
 
 public class Bomb  extends Shot implements Runnable{
@@ -63,7 +63,7 @@ public class Bomb  extends Shot implements Runnable{
 			Mat22 m = Mat22.createRotationalTransform((float) step*i);
 			new Fragments(new Vec2(), this.pos.add(m.mul(d).mul(7f)), m.mul(d), world);
 		}
-		LocalMultiplayerController.bodiesToDelete.add(this.body);
+		GameController.bodiesToDelete.add(this.body);
 	}
 
 }

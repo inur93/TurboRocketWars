@@ -34,7 +34,8 @@ public class NormalShot extends Shot {
 		body = world.createBody(bodyDef);
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(0.2f, 0.2f);
-	    body.createFixture(shape, 0);
+	    body.createFixture(shape, 10);
+	    
 	}
 	
 	@Override
@@ -45,7 +46,7 @@ public class NormalShot extends Shot {
 	    // add first velocity of ship given by initialVel then normal shots speed with ship direction
 	    body.setLinearVelocity(initialVel);
 	    body.applyLinearImpulse(dir.mul(NORMAL_SHOT_SPEED).clone(), pos, true);
-
+	    
 	    // important to add userdata otherwise no way to determine type of body at collision detection
 	    body.setUserData(new UserDataProp(SettingsFinal.USER_DATA_SHOT, Color.WHITE, 1, true, this));
 	}

@@ -1,101 +1,110 @@
 package area51.turboRocketWars.gui;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 
+import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.JLayeredPane;
+import javax.swing.Timer;
 
-public class MainWindow extends JFrame {
+public class MainWindow extends JLayeredPane implements ActionListener, Runnable{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	ArrayList<JPanel> panels = new ArrayList<JPanel>();
-	JPanel masterPanel;
+	private boolean donePainting = false;
+	private JFrame frame;
+	private BufferedImage background;
 	public MainWindow(){
-//		this.setExtendedState(MAXIMIZED_BOTH);
-//		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setBounds(0, 0, 800, 600);
-		setUndecorated(true);
-		setAlwaysOnTop(true);
-		setVisible(true);
-		setResizable(false);
-	}
-	public void addWindowPanel(JPanel... panel) {
-		for(int i = 0; i < panel.length; i++){
-			JPanel p = panel[i];
-			int pX = getWidth() - getWidth()/(panel.length-i);
-			int pY = 0;
-			int pW = getWidth()/panel.length;
-			int pH = getHeight();
-			p.setBounds(pX, pY, pW, pH);
-			p.setPreferredSize(new Dimension(pW, pH));
-			
-			getContentPane().add(p);
-			panels.add(p);
-			
-		}
-	}
-	
-	private JPanel menu;
-	private MainMenuPanel mainMenu = new MainMenuPanel();
-	public void setMenu(){
-		getContentPane().setBackground(Color.cyan);
-		BufferedImage img = getScreenShot(getContentPane());
-		clearWindow();
+		this.frame = new JFrame();
+		this.frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//				this.frame.setBounds(0, 0, 800, 600);
+		this.frame.setUndecorated(true);
+		this.frame.setAlwaysOnTop(true);
+		this.frame.setResizable(false);
 		
-		mainMenu.setBounds(0, 0, getWidth(), getHeight());
-		mainMenu.setBackground(img.getScaledInstance(getWidth(), getHeight(), 0));
-		getContentPane().add(mainMenu.getPanel());
+		setLayout(new GridBagLayout());
 		
+		this.frame.add(this);
+		this.frame.setVisible(true); 
+		EventQueue.invokeLater(this);
 	}
-	
-	  public static BufferedImage getScreenShot(
-			    Component component) {
 
-			    BufferedImage image = new BufferedImage(
-			      component.getWidth(),
-			      component.getHeight(),
-			      BufferedImage.TYPE_INT_RGB
-			      );
-			    // call the Component's paint method, using
-			    // the Graphics object of the image.
-			    component.paint( image.getGraphics() ); // alternately use .printAll(..)
-			    return image;
-			  }
+	public void addLayer(JComponent layer, int x, int y, int width, int height) {
+
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = x;
+		gbc.gridy = y;
+		gbc.weightx = 0;
+		gbc.weighty = 0;
+		gbc.fill = GridBagConstraints.BOTH;
+		layer.setBounds(x, y, width, height);
+		System.out.println("x,y=" + x + "," + y + "\t" + "width,height=" + width + "," + height);
+		add(layer, gbc);
+	}
+
+	@Override 
+	public synchronized void addKeyListener(KeyListener l) {
+		this.frame.addKeyListener(l);
+	};
 	
-	public void removeMenu(){
-		if(menu != null){
-			remove(menu);
-			menu = null;
-		}
+	@Override
+	public synchronized KeyListener[] getKeyListeners() {
+		return this.frame.getKeyListeners();
 	}
 	
-	private void resizePanels(){
-		for(int i = 0; i < panels.size(); i++){
-			int pX = getWidth() - getWidth()/(i+1);
-			int pY = 0;
-			int pW = getWidth()/panels.size();
-			int pH = getHeight();
-			panels.get(i).setBounds(pX, pY, pW, pH);
+	@Override
+	public synchronized void removeKeyListener(KeyListener l) {
+		this.frame.removeKeyListener(l);
+	}
+
+	public BufferedImage getScreenShot() {
+
+		BufferedImage image = new BufferedImage(
+				getWidth(),
+				getHeight(),
+				BufferedImage.TYPE_INT_RGB
+				);
+		// call the Component's paint method, using
+		// the Graphics object of the image.
+		frame.paint( image.getGraphics() ); 
+		return image;
+	}
+
+	@Override
+	protected void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		if (background != null) {
+			Graphics2D g2d = (Graphics2D) g.create();
+			g2d.drawImage(background, 0, 0, this);
+			g2d.dispose();
 		}
 	}
 
-	public void clearWindow() {
-//		for(JPanel p : panels) {
-//			System.out.println(p.getX());
-//			getContentPane().remove(p);
-//			getContentPane().createImage(10, 10);
-//			
-//		}
-		getContentPane().removeAll();
-		getContentPane().revalidate();
-		getContentPane().repaint();
-		System.out.println("clearwindow");
+	public void setBackground(BufferedImage img){
+		this.background = img;
+		this.frame.setVisible(true);
+		System.out.println("background set to: " + img.getHeight() + ";" + img.getWidth());
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		frame.repaint();
+	}
+
+	@Override
+	public void run() {
+		
+		new Timer(20, this).start();
 	}
 }

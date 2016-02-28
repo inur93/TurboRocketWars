@@ -1,29 +1,21 @@
-package area51.turboRocketWars.controllers;
+package area51.turboRocketWars.listeners;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
 import javax.swing.Timer;
 
-import org.jbox2d.dynamics.Body;
-
-import area51.turboRocketWars.Bodies.Ship;
 import area51.turboRocketWars.settings.KeyBoardConfigurations;
 import area51.turboRocketWars.settings.SettingsFinal;
 
-public class KeyHandler implements KeyListener, ActionListener{
+public class GameKeyHandler extends KeyHandler{
 
-	private final KeyBoardConfigurations keyConfig;
 	
 	private volatile ArrayList<Integer> cmdQueue = new ArrayList<Integer>();
-	private Ship ship;
-	public KeyHandler(KeyBoardConfigurations keyConfig, Ship ship) {
-		this.keyConfig = keyConfig;
-		this.ship = ship;
-		new Timer(SettingsFinal.KEY_UPDATE_SPEED, this).start();;
+	public GameKeyHandler(KeyBoardConfigurations keyConfig, KeyExecutor executor) {
+		super(keyConfig, executor);
+		new Timer(SettingsFinal.KEY_UPDATE_SPEED, this).start();
 	}
 	public void keyTyped(KeyEvent e) {	}
 	
@@ -38,21 +30,21 @@ public class KeyHandler implements KeyListener, ActionListener{
 		cmdQueue.remove(new Integer(e.getKeyCode()));
 	}
 	public void actionPerformed(ActionEvent e) {
+
 		for(int k : cmdQueue){
 			if(k == keyConfig.BOOST){
-				ship.boost();
+				executor.boost();
 			}else if(k == keyConfig.LEFT){
-				ship.yawLeft();
+				executor.left();
 			}else if(k == keyConfig.RIGHT){
-				ship.yawRight();
-			}else if(k == keyConfig.SHOT1){
-				ship.shootStd();
-			}else if(k == keyConfig.SHOT2){
-				ship.shoot1();
-			}else if(k == keyConfig.SHOT3){
-				ship.shoot2();
+				executor.right();
+			}else if(k == keyConfig.SHOT_NORMAL){
+				executor.shootNormal();
+			}else if(k == keyConfig.SHOT_SPECIAL){
+				executor.shootSpecial();
 			}
 		}
 	}
+
 
 }

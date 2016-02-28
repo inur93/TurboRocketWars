@@ -5,6 +5,7 @@ import java.awt.Color;
 import area51.turboRocketWars.Bodies.Ship;
 import area51.turboRocketWars.Bodies.maps.Map;
 import area51.turboRocketWars.Bodies.maps.Platform;
+import area51.turboRocketWars.Bodies.maps.objects.Entity;
 import area51.turboRocketWars.Bodies.shots.Shot;
 
 public class UserDataProp {
@@ -17,6 +18,12 @@ public class UserDataProp {
 	public Ship ship;
 	public Map map;
 	public Platform platform;
+	public Entity entity;
+	
+	public UserDataProp(String bodyType, Color color, int stroke, boolean fill, Entity entity) {
+		this(bodyType, color, stroke, fill);
+		this.entity = entity;
+	}
 	
 	public UserDataProp(String bodyType, Color color, int stroke, boolean fill, Ship ship) {
 		this(bodyType, color, stroke, fill);

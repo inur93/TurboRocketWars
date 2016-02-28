@@ -1,4 +1,4 @@
-package area51.turboRocketWars;
+package area51.turboRocketWars.gui;
 
 import org.jbox2d.common.IViewportTransform;
 import org.jbox2d.common.Mat22;
