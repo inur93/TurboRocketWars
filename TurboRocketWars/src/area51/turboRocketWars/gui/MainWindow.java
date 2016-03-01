@@ -1,5 +1,6 @@
 package area51.turboRocketWars.gui;
 
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -27,6 +28,7 @@ public class MainWindow extends JLayeredPane implements ActionListener, Runnable
 	public MainWindow(){
 		this.frame = new JFrame();
 		this.frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		
 		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 //				this.frame.setBounds(0, 0, 800, 600);
 		this.frame.setUndecorated(true);
@@ -42,6 +44,10 @@ public class MainWindow extends JLayeredPane implements ActionListener, Runnable
 
 	public void addLayer(JComponent layer, int x, int y, int width, int height) {
 
+		this.setPreferredSize(new Dimension(1920, 1080));
+		this.setMinimumSize(new Dimension(1920, 1080));
+		this.setSize(1920, 1080);
+		
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = x;
 		gbc.gridy = y;

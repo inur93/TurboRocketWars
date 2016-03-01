@@ -23,4 +23,5 @@ public class SettingsFinal {
 	public static final float PLATFORM_FRICTION = 10;
 	public static final double MAX_DAMAGE = 200;
 	public static final float LANDING_ANGLE_TOLERANCE = 0.4f;
+	public static final float SHOT_DENSITY = 10;
 }

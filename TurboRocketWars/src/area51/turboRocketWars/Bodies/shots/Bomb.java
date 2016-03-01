@@ -11,7 +11,7 @@ import org.jbox2d.dynamics.World;
 
 import area51.turboRocketWars.Bodies.userData.UserDataProp;
 import area51.turboRocketWars.controllers.GameController;
-import area51.turboRocketWars.settings.SettingsFinal;
+import static area51.turboRocketWars.settings.SettingsFinal.*;
 
 public class Bomb  extends Shot implements Runnable{
 
@@ -32,9 +32,9 @@ public class Bomb  extends Shot implements Runnable{
 		body = world.createBody(bodyDef);
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(0.4f, 0.4f);
-		body.createFixture(shape, 15);
+		body.createFixture(shape, SHOT_DENSITY);
 		body.applyLinearImpulse(dir.mul(impFactor), pos, true);
-		body.setUserData(new UserDataProp(SettingsFinal.USER_DATA_SHOT, Color.WHITE, 1, true, this));
+		body.setUserData(new UserDataProp(USER_DATA_SHOT, Color.WHITE, 1, true, this));
 		new Thread(this).start();
 	}
 

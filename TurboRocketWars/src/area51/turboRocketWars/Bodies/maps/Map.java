@@ -2,9 +2,6 @@ package area51.turboRocketWars.Bodies.maps;
 
 import java.awt.Color;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-
 import org.jbox2d.common.OBBViewportTransform;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.World;
@@ -28,15 +25,25 @@ public class Map {
 	private Platform[] platforms;
 	private Entity[] entities;
 	
+	public static Map createRocksMap(World world){	
+		Platform[] platforms = new Platform[]{
+				new Platform(50, 0),
+				new Platform(800, 200)
+		};		
+		
+		return new Map("shooting rocks ", world, new Vec2(0, 0), 1000, 500, platforms, 
+				new Rock(new Vec2(100, 100), Color.gray, true, 1, 3, 0, true),
+				new Rock(new Vec2(750, 250), Color.gray.darker(), true, 1, 3, 0, true),
+				new Island(new Vec2(800, 200), Color.orange.darker(), true, 1));
+	}
+	
 	public static Map createDefaultMap(World world){	
 		Platform[] platforms = new Platform[]{
 				new Platform(50, 0),
 				new Platform(800, 200)
 		};		
 		
-		return new Map("shooting rocks", world, new Vec2(0, 0), 1000, 500, platforms, 
-				new Rock(new Vec2(100, 100), Color.gray, true, 1, 3, 0, true),
-				new Rock(new Vec2(750, 250), Color.gray.darker(), true, 1, 3, 0, true),
+		return new Map("default map", world, new Vec2(0, 0), 1000, 500, platforms, 
 				new Island(new Vec2(800, 200), Color.orange.darker(), true, 1));
 	}
 
@@ -72,12 +79,14 @@ public class Map {
 	}
 	
 	public void preview(MainWindow window, int width, int height, boolean showStatic){
+		Ship s = new Ship(world, new Vec2(this.width/2, this.height/2));
+		s.getBody().setActive(false);
+		MainGamePanel p = new MainGamePanel(world, null, new OBBViewportTransform(), 1.8f);
+		preview(p, width, height, showStatic);
+	}
+	public void preview(MainGamePanel panel, int width, int height, boolean showStatic){
 
-//		Ship s = new Ship(world, new Vec2(this.width/2, this.height/2));
-//		s.getBody().setActive(false);
-		JPanel p = new MainGamePanel(world, null, new OBBViewportTransform(), 1.8f);
-		delay(500);
-		window.addLayer(p, 0,0, width > 0 ? width : window.getWidth(), height > 0 ? height : window.getHeight());
+		panel.setWorld(this.create(world).world);
 
 		// for test
 		if(!showStatic)

@@ -63,8 +63,11 @@ public class MainGamePanel extends JPanel{
 	public volatile boolean stopped = false;
 
 
-
 	public MainGamePanel(World world, Ship ship, OBBViewportTransform camera, float zoom) {
+		this(world, ship, camera, zoom, 0, 0);
+	}
+	
+	public MainGamePanel(World world, Ship ship, OBBViewportTransform camera, float zoom, float x, float y) {
 		this.ship = ship;
 		this.world = world;
 		this.camera = camera;
@@ -72,6 +75,8 @@ public class MainGamePanel extends JPanel{
 		if(ship != null){
 			Vec2 point = ship.getBody().getPosition();
 			this.camera.setCamera(point.x, point.y, zoom);
+		}else{
+			this.camera.setCamera(x, y, zoom);
 		}
 		setMinimumSize(new Dimension(MIN_WIDTH, MIN_HEIGHT));
 		setBackground(Color.black);
@@ -198,7 +203,7 @@ public class MainGamePanel extends JPanel{
 		super.paintComponent(g);
 		if(world == null) return;
 
-		drawTestGrid(g);
+//		drawTestGrid(g);
 
 		Body body = world.getBodyList();
 

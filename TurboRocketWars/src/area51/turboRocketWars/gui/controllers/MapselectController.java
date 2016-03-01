@@ -54,10 +54,11 @@ public class MapselectController extends ViewController{
 			guiController.cancel();
 			break;
 		default:
-			System.out.println("performing command");
 			for(Map m : maps){
 				if(m.getName().equals(e.getActionCommand())){
 					guiController.selectMap(m);
+					panel.selectMap(m);
+					break;
 				}
 			}
 			break;

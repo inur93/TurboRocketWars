@@ -9,7 +9,7 @@ import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.World;
 
 import area51.turboRocketWars.Bodies.userData.UserDataProp;
-import area51.turboRocketWars.settings.SettingsFinal;
+import static area51.turboRocketWars.settings.SettingsFinal.*;
 
 public class NormalShot extends Shot {
 
@@ -34,7 +34,7 @@ public class NormalShot extends Shot {
 		body = world.createBody(bodyDef);
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(0.2f, 0.2f);
-	    body.createFixture(shape, 10);
+	    body.createFixture(shape, SHOT_DENSITY);
 	    
 	}
 	
@@ -48,7 +48,7 @@ public class NormalShot extends Shot {
 	    body.applyLinearImpulse(dir.mul(NORMAL_SHOT_SPEED).clone(), pos, true);
 	    
 	    // important to add userdata otherwise no way to determine type of body at collision detection
-	    body.setUserData(new UserDataProp(SettingsFinal.USER_DATA_SHOT, Color.WHITE, 1, true, this));
+	    body.setUserData(new UserDataProp(USER_DATA_SHOT, Color.WHITE, 1, true, this));
 	}
 	
 	public static class NormalShotFactory implements Factory<NormalShot>{
