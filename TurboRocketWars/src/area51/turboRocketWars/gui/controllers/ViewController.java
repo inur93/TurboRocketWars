@@ -15,11 +15,13 @@ public abstract class ViewController implements KeyExecutor, ActionListener   {
 	public ViewController(GUIController guiController, KeyHandler keyHandler) {
 		this.guiController = guiController;
 		this.keyHandler = keyHandler;
+		System.out.println("new ViewController");
 	}
 	
 	public abstract JPanel getView();
 	
 	public KeyHandler setActive(){
+		System.out.println("setting viewController active... ");
 		this.keyHandler.setKeyExecutor(this);
 		return this.keyHandler;
 	}

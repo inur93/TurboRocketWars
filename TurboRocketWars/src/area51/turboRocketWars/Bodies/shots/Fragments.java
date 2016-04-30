@@ -21,7 +21,7 @@ public class Fragments extends Shot {
 	}
 
 	@Override
-	public void execute() {
+	public void executeTask() {
 		BodyDef bodyDef = new BodyDef();
 		bodyDef.type = BodyType.DYNAMIC;
 		bodyDef.setPosition(pos);

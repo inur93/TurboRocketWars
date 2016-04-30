@@ -82,8 +82,9 @@ public class MainGamePanel extends JPanel{
 		setBackground(Color.black);
 	}
 
-	public void setWorld(World world){
+	public void setWorld(World world, float zoom, float x, float y){
 		this.world = world;
+		this.camera.setCamera(x, y, zoom);
 	}
 
 	@Override

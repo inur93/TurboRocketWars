@@ -4,10 +4,11 @@ import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.World;
 
-import area51.turboRocketWars.Bodies.Delegate;
 import area51.turboRocketWars.controllers.GameController;
+import area51.turboRocketWars.tasks.Task;
+import static area51.turboRocketWars.settings.SettingsEditable.*;
 
-public abstract class Shot implements Delegate {
+public abstract class Shot implements Task {
 
 	protected World world;
 	protected Body body;
@@ -17,7 +18,7 @@ public abstract class Shot implements Delegate {
 	protected Vec2 pos;
 	protected Vec2 dir;
 	protected long startTime; // ms
-	protected final long shotDuration = 3000; //ms
+	protected final long shotDuration = ShotDuration(); //ms
 	
 	public Shot(Vec2 initialVel, Vec2 pos, Vec2 dir, World world) {
 		this.initialVel = initialVel;
@@ -25,12 +26,12 @@ public abstract class Shot implements Delegate {
 		this.dir = dir.clone();
 		this.dir.normalize();
 		this.world = world;	
-		GameController.delegates.add(this);
+		GameController.tasks.add(this);
 		GameController.shots.add(this);
 		this.startTime = System.currentTimeMillis();
 	}
 	
-	public abstract void execute();
+	public abstract void executeTask();
 	
 	/**
 	 * lifetime for shot. 

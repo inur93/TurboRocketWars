@@ -12,20 +12,23 @@ import org.jbox2d.dynamics.World;
 import area51.turboRocketWars.Bodies.userData.UserDataProp;
 import area51.turboRocketWars.controllers.GameController;
 import static area51.turboRocketWars.settings.SettingsFinal.*;
+import static area51.turboRocketWars.settings.SettingsEditable.*;
+
 
 public class Bomb  extends Shot implements Runnable{
 
-	private static int BOMB_AMMO_COST = 1;
+	private static int BOMB_AMMO_COST = BombAmmoCost();
 	private float impFactor = 20;
-	private long timeToDetonate = 1000; // msec
-	private int numberFragments = 20;
+	private long timeToDetonate = BombTimeToDetonate(); // msec
+	private int numberFragments = BombNumberFragments();
+	
 	public Bomb(Vec2 initialVel, Vec2 pos, Vec2 dir, World world) {
 		super(initialVel, pos, dir, world);
-		this.damage = 20;
+		this.damage = BombDamage();
 	}
 
 	@Override
-	public void execute() {
+	public void executeTask() {
 		BodyDef bodyDef = new BodyDef();
 		bodyDef.type = BodyType.DYNAMIC;
 		bodyDef.setPosition(pos);

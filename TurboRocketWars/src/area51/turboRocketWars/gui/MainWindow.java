@@ -1,15 +1,23 @@
 package area51.turboRocketWars.gui;
 
+import java.awt.AWTKeyStroke;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.FlowLayout;
+import java.awt.FocusTraversalPolicy;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
+import java.util.HashSet;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -35,28 +43,42 @@ public class MainWindow extends JLayeredPane implements ActionListener, Runnable
 		this.frame.setAlwaysOnTop(true);
 		this.frame.setResizable(false);
 		
-		setLayout(new GridBagLayout());
+//		setLayout(new GridBagLayout());
+//		setLayout(new GridLayout(1, 2));
+//		setLayout(new FlowLayout(FlowLayout.CENTER, 250, 0));
 		
 		this.frame.add(this);
-		this.frame.setVisible(true); 
+		this.frame.setVisible(true);
+		
+		// disabling TAB and Shift+TAB. Otherwise focus can be lost to other components and keylistener will not work anymore
+		KeyboardFocusManager.getCurrentKeyboardFocusManager().setDefaultFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, new HashSet<AWTKeyStroke>());
+		KeyboardFocusManager.getCurrentKeyboardFocusManager().setDefaultFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, new HashSet<AWTKeyStroke>());
+		KeyboardFocusManager.getCurrentKeyboardFocusManager().setDefaultFocusTraversalKeys(KeyboardFocusManager.DOWN_CYCLE_TRAVERSAL_KEYS, new HashSet<AWTKeyStroke>());
+		KeyboardFocusManager.getCurrentKeyboardFocusManager().setDefaultFocusTraversalKeys(KeyboardFocusManager.UP_CYCLE_TRAVERSAL_KEYS, new HashSet<AWTKeyStroke>());
+		
 		EventQueue.invokeLater(this);
 	}
 
 	public void addLayer(JComponent layer, int x, int y, int width, int height) {
 
-		this.setPreferredSize(new Dimension(1920, 1080));
-		this.setMinimumSize(new Dimension(1920, 1080));
-		this.setSize(1920, 1080);
+//		this.setPreferredSize(new Dimension(1920, 1080));
+//		this.setMinimumSize(new Dimension(1920, 1080));
+//		this.setSize(1920, 1080);
 		
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.gridx = x;
-		gbc.gridy = y;
-		gbc.weightx = 0;
-		gbc.weighty = 0;
-		gbc.fill = GridBagConstraints.BOTH;
+//		GridBagConstraints gbc = new GridBagConstraints();
+//		gbc.gridx = x;
+//		gbc.gridy = y;
+//		gbc.weightx = 0;
+//		gbc.weighty = 0;
+//		gbc.fill = GridBagConstraints.BOTH;
+		
 		layer.setBounds(x, y, width, height);
+//		layer.setSize(width, height);
+		
 		System.out.println("x,y=" + x + "," + y + "\t" + "width,height=" + width + "," + height);
-		add(layer, gbc);
+//		add(layer, gbc);
+		add(layer);
+
 	}
 
 	@Override 
@@ -72,6 +94,7 @@ public class MainWindow extends JLayeredPane implements ActionListener, Runnable
 	@Override
 	public synchronized void removeKeyListener(KeyListener l) {
 		this.frame.removeKeyListener(l);
+
 	}
 
 	public BufferedImage getScreenShot() {
@@ -85,6 +108,10 @@ public class MainWindow extends JLayeredPane implements ActionListener, Runnable
 		// the Graphics object of the image.
 		frame.paint( image.getGraphics() ); 
 		return image;
+	}
+	
+	public void giveFocus(){
+		this.frame.requestFocusInWindow();
 	}
 
 	@Override

@@ -13,11 +13,16 @@ public class Player {
 	private MenuKeyHandler menuKeyHandler;
 	
 	public Player(Ship ship) {
+		this(ship, null);
+	}
+
+	public Player(Ship ship, KeyBoardConfigurations keyConfig){
 		this.ship = ship;
-		KeyBoardConfigurations config = new KeyBoardConfigurations();
+		KeyBoardConfigurations config = keyConfig == null ? new KeyBoardConfigurations() : keyConfig;
 		this.gameKeyHandler = new GameKeyHandler(config, ship);
 		this.menuKeyHandler = new MenuKeyHandler(config, null);
 	}
+
 	
 	public KeyHandler getMenuKeyHandler(){
 		return this.menuKeyHandler;
@@ -29,6 +34,10 @@ public class Player {
 	
 	public Ship getShip(){
 		return this.ship;
+	}
+	
+	public void setShip(Ship ship){
+		this.ship = ship;
 	}
 
 }

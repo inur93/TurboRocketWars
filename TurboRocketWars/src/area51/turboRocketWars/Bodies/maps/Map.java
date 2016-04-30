@@ -1,6 +1,7 @@
 package area51.turboRocketWars.Bodies.maps;
 
 import java.awt.Color;
+import java.awt.Dimension;
 
 import org.jbox2d.common.OBBViewportTransform;
 import org.jbox2d.common.Vec2;
@@ -12,6 +13,7 @@ import area51.turboRocketWars.Bodies.maps.objects.Island;
 import area51.turboRocketWars.Bodies.maps.objects.Rock;
 import area51.turboRocketWars.gui.MainWindow;
 import area51.turboRocketWars.gui.views.MainGamePanel;
+import area51.turboRocketWars.settings.SettingsFinal;
 
 public class Map {
 
@@ -74,6 +76,10 @@ public class Map {
 		return spawnPoints[curSpawnIndex++%spawnPoints.length];
 	}
 	
+	public int getNumSpawnPoints(){
+		return spawnPoints.length;
+	}
+	
 	public void addEntity(Entity entity){
 		entity.create(world);
 	}
@@ -86,13 +92,14 @@ public class Map {
 	}
 	public void preview(MainGamePanel panel, int width, int height, boolean showStatic){
 
-		panel.setWorld(this.create(world).world);
-
+		panel.setWorld(this.create(world).world, width/this.width, this.width/2, this.height/2);
+		panel.setPreferredSize(new Dimension(width, height));
+		
 		// for test
 		if(!showStatic)
 		for(int i = 0; i < 4000; i++){
 			delay(100);
-			world.step(0.1f, 6, 3);
+			world.step(0.1f, SettingsFinal.velocityIterations, SettingsFinal.positionIterations);
 		}
 
 	}

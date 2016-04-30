@@ -21,7 +21,7 @@ public class KeyBoardConfigurations {
 	private final int[] CONFIG_SELECTED;
 
 	private static int CUR_KEY_CONFIG = 0;
-	private static int[][] KEY_CONFIGS = new int[][]{WASD_KEYS, ARROW_KEYS, IJKL_KEYS};
+	private static int[][] KEY_CONFIGS = new int[][]{ARROW_KEYS, WASD_KEYS, IJKL_KEYS};
 
 	/**
 	 * returns next default configuration

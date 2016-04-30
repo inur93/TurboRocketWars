@@ -1,7 +1,5 @@
 package area51.turboRocketWars.controllers;
 
-import static area51.turboRocketWars.settings.SettingsEditable.DEF_GRAVITY_X;
-import static area51.turboRocketWars.settings.SettingsEditable.DEF_GRAVITY_Y;
 import static area51.turboRocketWars.settings.SettingsFinal.LANDING_ANGLE_TOLERANCE;
 import static area51.turboRocketWars.settings.SettingsFinal.MAX_DAMAGE;
 import static area51.turboRocketWars.settings.SettingsFinal.USER_DATA_MAP;
@@ -13,42 +11,31 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import javax.swing.JPanel;
-
 import org.jbox2d.callbacks.ContactImpulse;
 import org.jbox2d.callbacks.ContactListener;
 import org.jbox2d.collision.Manifold;
 import org.jbox2d.common.MathUtils;
-import org.jbox2d.common.OBBViewportTransform;
-import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.World;
 import org.jbox2d.dynamics.contacts.Contact;
 
-import area51.turboRocketWars.Bodies.Delegate;
 import area51.turboRocketWars.Bodies.Ship;
-import area51.turboRocketWars.Bodies.maps.Map;
 import area51.turboRocketWars.Bodies.shots.Shot;
 import area51.turboRocketWars.Bodies.userData.UserDataProp;
-import area51.turboRocketWars.gui.MainWindow;
-import area51.turboRocketWars.gui.MainWindow;
-import area51.turboRocketWars.gui.views.MainGamePanel;
-import area51.turboRocketWars.listeners.KeyHandler;
-import area51.turboRocketWars.regeneration.AmmoRegen;
-import area51.turboRocketWars.regeneration.HPRegen;
-import area51.turboRocketWars.settings.KeyBoardConfigurations;
 import area51.turboRocketWars.settings.SettingsFinal;
+import area51.turboRocketWars.tasks.Task;
 
 public class GameController implements Runnable, ContactListener{
 
 	private MainController mainController;
 	private World world;
+	private boolean paused = false;
 	
 	//TODO figure out a better way to handle this. should not be this many queues and lists
 	public static Queue<Body> bodiesToDelete = new LinkedList<Body>();
 	public Queue<Ship> shipsToKill = new LinkedList<Ship>();
 	public static ArrayList<Shot> shots = new ArrayList<Shot>();
-	public static Queue<Delegate> delegates = new LinkedList<Delegate>();
+	public static Queue<Task> tasks = new LinkedList<Task>();
 
 	public GameController(MainController mainController, World world) {
 		this.mainController = mainController;
@@ -58,8 +45,8 @@ public class GameController implements Runnable, ContactListener{
 	}
 
 	public void run() {
-
-		while(true){
+		paused = false;
+		while(!paused){
 			world.step(SettingsFinal.TIME_STEP, SettingsFinal.velocityIterations, SettingsFinal.positionIterations);
 
 			while(!bodiesToDelete.isEmpty()){
@@ -74,7 +61,7 @@ public class GameController implements Runnable, ContactListener{
 			
 			removeTimedOutShots();
 
-			while(!delegates.isEmpty()) delegates.remove().execute();
+			while(!tasks.isEmpty()) tasks.remove().executeTask();
 
 			if(Ship.ships.size() == 1){
 				Ship.ships.get(0).setWinner();
@@ -86,6 +73,18 @@ public class GameController implements Runnable, ContactListener{
 				Thread.sleep((long) (SettingsFinal.TIME_STEP*1000));
 			} catch (InterruptedException e) {}
 		}
+	}
+	
+	public void pause(){
+		this.paused = true;
+	}
+	
+	public void resume(){
+		if(paused) new Thread(this).start();
+	}
+	
+	public boolean isPaused(){
+		return this.paused;
 	}
 
 	private void removeTimedOutShots() {

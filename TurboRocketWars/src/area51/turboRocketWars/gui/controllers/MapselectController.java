@@ -1,6 +1,7 @@
 package area51.turboRocketWars.gui.controllers;
 
 import java.awt.event.ActionEvent;
+import java.util.HashMap;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -14,16 +15,23 @@ import area51.turboRocketWars.settings.KeyBoardConfigurations;
 public class MapselectController extends ViewController{
 
 	private MapSelectPanel panel;
-	private Map[] maps;
+	private HashMap<String, Map> maps = new HashMap<String, Map>();
+
 	public MapselectController(GUIController guiController, KeyHandler keyHandler, Map... maps) {
 		super(guiController, keyHandler);
-		this.panel = new MapSelectPanel(this, maps);
-		this.maps = maps;
+		String[] keys = new String[maps.length];
+		for(int i = 0; i < maps.length; i++){
+			keys[i] = maps[i].getName();
+			this.maps.put(keys[i], maps[i]);
+		}
+		this.panel = new MapSelectPanel(this, keys);
+		this.panel.selectMap(this.maps.get(keys[0]));
 	}
 
 	@Override
 	public void boost() {
-		this.panel.focusPrevButton();
+		String mapKey = this.panel.focusPrevButton();
+		this.panel.showMap(maps.get(mapKey));
 	}
 
 	@Override
@@ -41,7 +49,8 @@ public class MapselectController extends ViewController{
 
 	@Override
 	public void shootNormal() {
-		this.panel.focusNextButton();
+		String mapKey = this.panel.focusNextButton();
+		this.panel.showMap(maps.get(mapKey));
 	}
 
 	@Override
@@ -54,12 +63,12 @@ public class MapselectController extends ViewController{
 			guiController.cancel();
 			break;
 		default:
-			for(Map m : maps){
-				if(m.getName().equals(e.getActionCommand())){
-					guiController.selectMap(m);
-					panel.selectMap(m);
-					break;
-				}
+			Map m = maps.get(e.getActionCommand());
+			if(m != null){
+				guiController.selectMap(m);
+				panel.selectMap(m);
+			}else {
+				System.err.println("unknown action command. Expected map but no map was found with name: " + e.getActionCommand());
 			}
 			break;
 		}

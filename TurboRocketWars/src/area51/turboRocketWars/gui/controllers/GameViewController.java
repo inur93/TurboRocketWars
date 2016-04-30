@@ -19,6 +19,7 @@ public class GameViewController extends ViewController{
 	private Player player;
 	public GameViewController(GUIController guiController, KeyHandler keyHandler, World world, Player player, OBBViewportTransform camera) {
 		super(guiController, keyHandler);
+		System.out.println("new game view");
 		this.player = player;
 		this.panel = new MainGamePanel(world, player.getShip(), camera, SettingsFinal.CAMERA_ZOOM);
 		

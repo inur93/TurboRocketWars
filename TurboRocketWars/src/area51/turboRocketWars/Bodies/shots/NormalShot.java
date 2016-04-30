@@ -39,7 +39,7 @@ public class NormalShot extends Shot {
 	}
 	
 	@Override
-	public void execute() {
+	public void executeTask() {
 		// create body and adds it to the world at given position
 	    createBody();
 	    

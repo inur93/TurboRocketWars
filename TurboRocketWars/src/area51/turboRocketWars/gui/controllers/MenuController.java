@@ -33,9 +33,7 @@ public class MenuController extends ViewController{
 
 	@Override
 	public void right() {
-		this.menuPanel.getSelectedButton().setEnabled(true);
 		this.menuPanel.getSelectedButton().doClick();
-		this.menuPanel.getSelectedButton().setEnabled(false);
 		
 	}
 
@@ -45,10 +43,7 @@ public class MenuController extends ViewController{
 	}
 
 	@Override
-	public void shootSpecial() {
-		// TODO Auto-generated method stub
-		
-	}
+	public void shootSpecial() {}
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -65,13 +60,15 @@ public class MenuController extends ViewController{
 		case MainMenuPanel.CANCEL_ACTION:
 			this.guiController.cancel();
 			break;
+		case MainMenuPanel.SETTINGS_ACTION:
+			this.guiController.goToSettings();
+			break;
 			default:
 				System.err.println("unknown action command: " + e.getActionCommand());
 		}
 	}
 	
 	public JPanel getView(){
-		System.out.println("menu panel: " + menuPanel);
 		return this.menuPanel.getPanel();
 	}
 
